@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.MainActivity">
+
+    <RadioGroup
+        android:id="@+id/RadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorGray"
+        android:orientation="horizontal"
+        >
+
+        <com.gary.chemmaster.ui.CYLRadioBtn
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/MainRB"
+            android:drawableTop="@drawable/selector_main_radiobutton"
+            android:text="主页"
+            android:gravity="center"
+            android:button="@null"
+            android:checked="true"
+            />
+
+        <com.gary.chemmaster.ui.CYLRadioBtn
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/SearchRB"
+            android:drawableTop="@drawable/selector_search_radiobutton"
+            android:gravity="center"
+            android:text="搜索"
+            android:button="@null"
+            />
+
+        <com.gary.chemmaster.ui.CYLRadioBtn
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/DrawRB"
+            android:drawableTop="@drawable/selector_draw_radiobutton"
+            android:text="绘制"
+            android:gravity="center"
+            android:button="@null"
+            />
+
+        <com.gary.chemmaster.ui.CYLRadioBtn
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/MineRB"
+            android:drawableTop="@drawable/selector_mine_radiobutton"
+            android:text="我的"
+            android:gravity="center"
+            android:button="@null"
+            />
+    </RadioGroup>
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/Viewpager"
+        android:layout_above="@+id/RadioGroup">
+
+    </android.support.v4.view.ViewPager>
+
+</RelativeLayout>
