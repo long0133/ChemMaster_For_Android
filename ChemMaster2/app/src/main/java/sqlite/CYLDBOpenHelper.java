@@ -14,13 +14,16 @@ public class CYLDBOpenHelper extends SQLiteOpenHelper {
 
 
     private String DBname;
+    private String TableName;
     public static final String EDITOR_CHOICE_TABLE ="EDITROCHICE";
     public static final String EDITOR_CHOICE_HISTORY_TABLE ="EDITORCHICE_HISTORY";
+    public static final String NAME_REACTION_LIST_TABLE = "NAME_REACTION_LIST";
 
-    public CYLDBOpenHelper(Context context, String DBname)
+    public CYLDBOpenHelper(Context context, String DBname, String TBName)
     {
         super(context,DBname,null,1);
         this.DBname = DBname;
+        this.TableName = TBName;
     }
 
     @Override
@@ -30,22 +33,40 @@ public class CYLDBOpenHelper extends SQLiteOpenHelper {
 
         if (DBname.equals(CYLChemApplication.SQlite_DataBase_EditorChoice))
         {
-            sql = "CREATE TABLE "+   EDITOR_CHOICE_TABLE +"("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "editorsChoicePubDate INTEGER," +
-                    "journalTitle VARCHAR(30)," +
-                    "author VARCHAR(100)," +
-                    "title VARCHAR(200)," +
-                    "articalAbstract VARCHAR(400)," +
-                    "doi VARCHAR(50)," +
-                    "picpath VARCHAR(100))";
+            if (TableName.equals(EDITOR_CHOICE_TABLE))
+            {
+                sql = "CREATE TABLE "+   EDITOR_CHOICE_TABLE +"("+
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "editorsChoicePubDate INTEGER," +
+                        "journalTitle VARCHAR(30)," +
+                        "author VARCHAR(100)," +
+                        "title VARCHAR(200)," +
+                        "articalAbstract VARCHAR(400)," +
+                        "doi VARCHAR(50)," +
+                        "picpath VARCHAR(100))";
+            }
         }
         else if (DBname.equals(CYLChemApplication.SQlite_DataBase_EditorChoice_History))
         {
-            sql = "CREATE TABLE "+   EDITOR_CHOICE_HISTORY_TABLE +"("+
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "pubDate INTEGER," +
-                    "doi VARCHAR(50))";
+            if (TableName.equals(EDITOR_CHOICE_HISTORY_TABLE))
+            {
+                sql = "CREATE TABLE "+   EDITOR_CHOICE_HISTORY_TABLE +"("+
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "pubDate INTEGER," +
+                        "doi VARCHAR(50))";
+            }
+        }
+        else if (DBname.equals(CYLChemApplication.SQlite_DataBase_COMMON))
+        {
+            if (TableName.equals(NAME_REACTION_LIST_TABLE))
+            {
+                sql = "CREATE TABLE "+   NAME_REACTION_LIST_TABLE +"("+
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "desc VARCHAR(500)," +
+                        "name VARCHAR(50)," +
+                        "urlpath VARCHAR(100)," +
+                        "bitmap BLOB)";
+            }
         }
 
 

@@ -73,7 +73,7 @@ public class JSONParse {
             Log.i("cyl","进行更新 :" + lastUpadate);
 
             InputStream  is = CYLHttpUtils.get(CYLUrlFactory.getUrlOfAllEditorChoise());
-            String jsonStr = CYLHttpUtils.getJsonString(is);
+            String jsonStr = CYLHttpUtils.getString(is);
             /*获取jsonstr备份*/
             String strAftertreatment = new String(jsonStr);
 
@@ -129,7 +129,7 @@ public class JSONParse {
             /*历史表单更新了， 应该更新最近推荐*/
             Log.d("cyl","更新最近推荐");
 
-            String jsonStr = CYLHttpUtils.getJsonString(CYLHttpUtils.get(CYLUrlFactory.getUrlOfRencetEditorChoice(pubs, num)));
+            String jsonStr = CYLHttpUtils.getString(CYLHttpUtils.get(CYLUrlFactory.getUrlOfRencetEditorChoice(pubs, num)));
 
             JSONArray arr = new JSONArray(jsonStr);
 

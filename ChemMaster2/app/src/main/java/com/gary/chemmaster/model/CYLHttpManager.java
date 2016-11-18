@@ -1,14 +1,15 @@
 package com.gary.chemmaster.model;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-
 import com.gary.chemmaster.CallBack.CYLEditorChoiceCallBack;
 import com.gary.chemmaster.CallBack.CYLRecentCallBack;
+import com.gary.chemmaster.CallBack.CYLshowListCallBack;
 import com.gary.chemmaster.entity.CYLEditor;
 import com.gary.chemmaster.entity.CYLEditor_Doi_Pub;
-import com.gary.chemmaster.util.CYLHttpUtils;
-import com.gary.chemmaster.util.CYLUrlFactory;
+
+import com.gary.chemmaster.entity.CYLReactionDetail;
+import com.gary.chemmaster.util.CYLHtmlParse;
 import com.gary.chemmaster.util.JSONParse;
 
 import org.json.JSONException;
@@ -98,5 +99,70 @@ public class CYLHttpManager {
 
     }
 
+    /*获得list显示列表*/
+    public static void setListOfReactionDetail(final Context context, final CYLshowListCallBack<CYLReactionDetail> callBack)
+    {
+        AsyncTask<String, String ,List<CYLReactionDetail>> task = new AsyncTask<String, String, List<CYLReactionDetail>>() {
+            @Override
+            protected List<CYLReactionDetail> doInBackground(String... params) {
+
+                List<CYLReactionDetail> list = new ArrayList<>();
+
+                try {
+
+                    CYLHtmlParse parse = new CYLHtmlParse();
+                     list = parse.getNameReactionList(context);
+                }
+                catch (IOException e)
+                {
+
+                }
+
+                return list;
+            }
+
+            @Override
+            protected void onPostExecute(List<CYLReactionDetail> cylNameReactions) {
+
+                callBack.goToShowList(cylNameReactions);
+            }
+        };
+
+        task.execute();
+    }
+
+
+    /*获得list显示列表*/
+    public static void setDtailContent(final Context context, final String urlPath, final CYLshowListCallBack<String> callBack )
+    {
+        AsyncTask<String, String ,List<String>> task = new AsyncTask<String, String, List<String>>() {
+            @Override
+            protected List<String> doInBackground(String... params) {
+
+                List<String> list = new ArrayList<>();
+
+                try {
+
+                    CYLHtmlParse parse = new CYLHtmlParse();
+                    list = parse.getDetailContentForNameReacton(context, urlPath);
+                }
+                catch (IOException e)
+                {
+
+                }
+
+                return list;
+            }
+
+            @Override
+            protected void onPostExecute(List<String> list) {
+
+                callBack.showDetailContent(list);
+
+            }
+        };
+
+        task.execute();
+    }
 
 }

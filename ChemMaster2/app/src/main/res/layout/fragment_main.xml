@@ -2,15 +2,139 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp">
+>
 
-    <android.support.v4.view.ViewPager
+    <com.gary.chemmaster.ui.CYLViewPager
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:id="@+id/Viewpager_main_editorsuggest"
         >
+    </com.gary.chemmaster.ui.CYLViewPager>
 
-    </android.support.v4.view.ViewPager>
 
+    <!--设置indicator-->
+    <RadioGroup
+        android:layout_width="100dp"
+        android:layout_height="10dp"
+        android:id="@+id/indicator"
+        android:layout_below="@+id/Viewpager_main_editorsuggest"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-10dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:background="@drawable/selector_pager_indicator"
+            />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:background="@drawable/selector_pager_indicator"
+            />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:background="@drawable/selector_pager_indicator"
+            />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:background="@drawable/selector_pager_indicator"
+            />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:background="@drawable/selector_pager_indicator"
+            />
+
+    </RadioGroup>
+
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/Viewpager_main_editorsuggest"
+        android:id="@+id/brifIndicator"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/brif_highlight"
+            android:text="高亮文章"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_brif_indicator"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/brif_totalSynthesis"
+            android:text="全合成"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_brif_indicator"/>
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/brif_reaction"
+            android:text="人名反应"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_brif_indicator"/>
+
+    </RadioGroup>
+
+    <!--用于显示最近更新-->
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/brifIndicator"
+        android:id="@+id/brifViewPager"></android.support.v4.view.ViewPager>
 
 </RelativeLayout>

@@ -51,7 +51,8 @@ public class CYLEditorChoiceDao {
     {
         ArrayList<CYLEditor_Doi_Pub> pubs = new ArrayList<>();
 
-        CYLDBOpenHelper helper = new CYLDBOpenHelper(context, CYLChemApplication.SQlite_DataBase_EditorChoice_History);
+        CYLDBOpenHelper helper = new CYLDBOpenHelper(context, CYLChemApplication.SQlite_DataBase_EditorChoice_History,
+                                                                historyTable);
         SQLiteDatabase db = helper.getReadableDatabase();
 
         String[] columns = {"id","PubDate","doi"};
@@ -79,7 +80,8 @@ public class CYLEditorChoiceDao {
     /*向数据库中添加编辑推荐的历史信息*/
     public long insertHistory(CYLEditor_Doi_Pub pub)
     {
-        CYLDBOpenHelper helper = new CYLDBOpenHelper(context, CYLChemApplication.SQlite_DataBase_EditorChoice_History);
+        CYLDBOpenHelper helper = new CYLDBOpenHelper(context, CYLChemApplication.SQlite_DataBase_EditorChoice_History,
+                                                                historyTable);
 
         SQLiteDatabase db = helper.getReadableDatabase();
 
@@ -98,7 +100,8 @@ public class CYLEditorChoiceDao {
     public List<CYLEditor> getRecentEditorChoice(String whereClouse, String[] whereArgs)
     {
         List<CYLEditor> datas = new ArrayList<>();
-        CYLDBOpenHelper helper = new CYLDBOpenHelper(context, CYLChemApplication.SQlite_DataBase_EditorChoice);
+        CYLDBOpenHelper helper = new CYLDBOpenHelper(context, CYLChemApplication.SQlite_DataBase_EditorChoice,
+                                                               recentTable);
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor c = db.query(recentTable,
@@ -127,7 +130,7 @@ public class CYLEditorChoiceDao {
 
     public long insertRencetEditorChoice(CYLEditor editor)
     {
-        CYLDBOpenHelper helper = new CYLDBOpenHelper(context, CYLChemApplication.SQlite_DataBase_EditorChoice);
+        CYLDBOpenHelper helper = new CYLDBOpenHelper(context, CYLChemApplication.SQlite_DataBase_EditorChoice,recentTable);
         SQLiteDatabase db = helper.getReadableDatabase();
 
         ContentValues values = new ContentValues();

@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         adapter = new CYLPagerAdapter(getSupportFragmentManager(),fragments);
 
         pager.setAdapter(adapter);
+        pager.setOffscreenPageLimit(3);
     }
 
     /*设置监听器*/

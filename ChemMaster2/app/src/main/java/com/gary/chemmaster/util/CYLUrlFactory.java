@@ -36,5 +36,9 @@ public class CYLUrlFactory {
         return s;
     }
 
+    public static String getUrlOfAllNameReactionList()
+    {
+        return "http://www.organic-chemistry.org/namedreactions/";
+    }
 
 }

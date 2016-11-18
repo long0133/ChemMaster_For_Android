@@ -27,7 +27,7 @@ public class CYLHttpUtils {
         return is;
     }
 
-    public static String getJsonString(InputStream inputStream) throws IOException
+    public static String getString(InputStream inputStream) throws IOException
     {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;

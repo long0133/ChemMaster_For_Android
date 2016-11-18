@@ -5,8 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
+
+import com.gary.chemmaster.CallBack.CommonCallBack;
+import com.gary.chemmaster.entity.CYLPicEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,11 +29,13 @@ public class ImgaeLoader {
     boolean isLoading = true;
 
     /*加载任务队列*/
-    LinkedList<AvatarLoadTask> taskList = new LinkedList<>();
+    LinkedList<CYLPicEntity> taskList = new LinkedList<>();
     /*任务加载线程*/
     MusicAvatarLoadThread loadThread;
     /*用软引用指向bitmap,在内存警告时会释放部分软引用的对象*/
     HashMap<String, SoftReference<Bitmap>> avatarCache = new HashMap<>();
+    /*下载后的回调*/
+    CommonCallBack callBack;
 
     static final int MESSAGE_IMAGE_LOAD = 1;
     android.os.Handler handler = new android.os.Handler()
@@ -39,7 +46,7 @@ public class ImgaeLoader {
             switch (msg.what)
             {
                 case MESSAGE_IMAGE_LOAD:
-                    AvatarLoadTask task = (AvatarLoadTask) msg.obj;
+                    CYLPicEntity task = (CYLPicEntity) msg.obj;
                     if (task.bitmap != null)
                     {
                         ImageView imageView = null;
@@ -59,6 +66,7 @@ public class ImgaeLoader {
 
                             BitmapUtils.bitmapSave(ref.get(),new File(context.getCacheDir(),"image"
                                     + task.path.substring(task.path.lastIndexOf("/"))));
+
 
                         }
                         catch (IOException e)
@@ -89,25 +97,30 @@ public class ImgaeLoader {
     }
 
     /*异步加载图片,设置到对用view上*/
-    public void get(String picPath, ImageView imageView)
+    public void get(String picPath, ImageView imageView, CommonCallBack callBack)
     {
-         /*从缓存中取出图片*/
+        this.callBack = callBack;
+        CYLPicEntity picEntity = new CYLPicEntity();
+
+        picEntity.setImageView(imageView);
+
+        /*从缓存中取出图片*/
         if(avatarCache.containsKey(picPath))
         {
             Log.d("cyl", "从缓存中取出图片");
             SoftReference<Bitmap> ref = avatarCache.get(picPath);
             if (ref != null)
             {
-                Bitmap bitmap = ref.get();
-                if (bitmap != null)
+                picEntity.bitmap = ref.get();
+                if (picEntity.bitmap != null)
                 {
-                    imageView.setImageBitmap(bitmap);
+                    imageView.setImageBitmap(picEntity.bitmap);
                 }
                 else
                 {
 
                 /*缓存图片已经被GC清除, 则向任务队列中加入新的下载任务*/
-                    taskList.add(new AvatarLoadTask(picPath, null));
+                    taskList.add(new CYLPicEntity(null,picPath));
 
                     synchronized (loadThread)
                     {
@@ -120,19 +133,19 @@ public class ImgaeLoader {
         {
             Log.d("cyl", "从文件缓存中取出图片");
             /*从文件缓存中取出图片*/
-            Bitmap bitmap = BitmapUtils.bitmapLoad(new File(context.getCacheDir(),"image"
+            picEntity.bitmap = BitmapUtils.bitmapLoad(new File(context.getCacheDir(),"image"
                     + picPath.substring(picPath.lastIndexOf("/"))));
 
-            if (bitmap != null)
+            if (picEntity.bitmap != null)
             {
                 /*取出了图片,在界面上显示并且加载入缓存*/
-                avatarCache.put(picPath, new SoftReference<Bitmap>(bitmap));
-                imageView.setImageBitmap(bitmap);
+                avatarCache.put(picPath, new SoftReference<Bitmap>(picEntity.bitmap));
+                imageView.setImageBitmap(picEntity.bitmap);
 
             }else
             {
                 /*文件缓存中没有图片, 则向任务队列中加入新的下载任务*/
-                taskList.add(new AvatarLoadTask(picPath, null));
+                taskList.add(new CYLPicEntity(null, picPath,imageView));
 
                 synchronized (loadThread)
                 {
@@ -141,6 +154,9 @@ public class ImgaeLoader {
             }
 
         }
+
+
+        if (callBack != null && picEntity.bitmap != null) callBack.doSomeThing(picEntity);
     }
 
     public void stopThread()
@@ -165,9 +181,12 @@ public class ImgaeLoader {
                     if(!taskList.isEmpty())
                     {
                         Log.d("cyl", "下载图片");
-                        AvatarLoadTask task = taskList.removeFirst();
+                        CYLPicEntity task = taskList.removeFirst();
 
                         task.bitmap = BitmapFactory.decodeStream(CYLHttpUtils.get(task.path));
+
+                        /*下载完毕回调*/
+                        callBack.doSomeThing(task);
 
                         Message.obtain(handler,MESSAGE_IMAGE_LOAD,task).sendToTarget();
                     }
@@ -192,16 +211,17 @@ public class ImgaeLoader {
         }
     }
 
-    class AvatarLoadTask
-    {
-        String path;
-        Bitmap bitmap;
+//    class AvatarLoadTask
+//    {
+//        String path;
+//        Bitmap bitmap;
+//
+//        public AvatarLoadTask(String path, Bitmap bitmap) {
+//            this.path = path;
+//            this.bitmap = bitmap;
+//        }
+//    }
 
-        public AvatarLoadTask(String path, Bitmap bitmap) {
-            this.path = path;
-            this.bitmap = bitmap;
-        }
-    }
 
 
 }
