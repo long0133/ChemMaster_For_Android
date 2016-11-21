@@ -1,9 +1,11 @@
 package com.gary.chemmaster.entity;
 
+import android.content.pm.ProviderInfo;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.Dao.CYLNameReactionDao;
 
 /**
@@ -15,6 +17,9 @@ public class CYLReactionDetail implements Parcelable {
     private String Desc;
     private String UrlPath;
     private String name;
+    private String year;
+    private String author;
+
     public static final Parcelable.Creator<CYLReactionDetail> CREATOR
             = new Parcelable.Creator<CYLReactionDetail>(){
 
@@ -24,6 +29,9 @@ public class CYLReactionDetail implements Parcelable {
 
             detail.setUrlPath(source.readString());
             detail.setName(source.readString());
+            detail.setYear(source.readString());
+            detail.setAuthor(source.readString());
+
 
             return detail;
         }
@@ -45,8 +53,11 @@ public class CYLReactionDetail implements Parcelable {
 //        dest.writeString(getDesc());
         dest.writeString(getUrlPath());
         dest.writeString(name);
+        dest.writeString(year);
+        dest.writeString(author);
 
     }
+
 
     public void setName(String name) {
         this.name = name;
@@ -64,6 +75,22 @@ public class CYLReactionDetail implements Parcelable {
         UrlPath = urlPath;
     }
 
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getYear() {
+        return year;
+    }
 
     public String getName() {
         return name;

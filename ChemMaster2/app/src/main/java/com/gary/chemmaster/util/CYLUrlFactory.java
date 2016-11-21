@@ -41,4 +41,10 @@ public class CYLUrlFactory {
         return "http://www.organic-chemistry.org/namedreactions/";
     }
 
+    public static String getUrlOfAllTotalSynthesisList()
+    {
+        return "http://www.organic-chemistry.org/totalsynthesis/";
+    }
+
+
 }

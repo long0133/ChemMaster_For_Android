@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.CallBack.CYLshowListCallBack;
 import com.gary.chemmaster.R;
 import com.gary.chemmaster.activity.ShowPicListActivity;
@@ -77,13 +78,13 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
                 Intent intent = new Intent(getContext(), ShowPicListActivity.class);
                 startActivity(intent);
 
-                CYLHttpManager.setListOfReactionDetail(getContext(), new CYLshowListCallBack<CYLReactionDetail>() {
+                CYLHttpManager.setListOfReactionDetail(getContext(),MouleFlag.moduleNameReaction, new CYLshowListCallBack<CYLReactionDetail>() {
 
                     @Override
                     public void goToShowList(List<CYLReactionDetail> list) {
 
                         /*发送广播*/
-                        Intent broadCast = new Intent(CYLChemApplication.ACTION_PREPARE_TO_SHOW_LIST);
+                        Intent broadCast = new Intent(CYLChemApplication.ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST);
                         broadCast.putParcelableArrayListExtra("info",new ArrayList<CYLReactionDetail>(list));
                         getContext().sendBroadcast(broadCast);
 
@@ -98,10 +99,33 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
 
                 });
 
-
                 break;
 
             case R.id.ShowTotalSynthesis:
+                /*跳转界面*/
+                Intent Tintent = new Intent(getContext(), ShowPicListActivity.class);
+                startActivity(Tintent);
+
+                CYLHttpManager.setListOfReactionDetail(getContext(), MouleFlag.moduleTotalSynthesis, new CYLshowListCallBack<CYLReactionDetail>() {
+
+                    @Override
+                    public void goToShowList(List<CYLReactionDetail> list) {
+
+                        /*发送广播*/
+                        Intent broadCast = new Intent(CYLChemApplication.ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS);
+                        broadCast.putParcelableArrayListExtra("info",new ArrayList<CYLReactionDetail>(list));
+                        getContext().sendBroadcast(broadCast);
+
+                    }
+
+                    /*ignore*/
+                    @Override
+                    public void showDetailContent(List<String> content) {
+
+                    }
+
+
+                });
                 break;
 
             case R.id.ShowHightLightBtn:

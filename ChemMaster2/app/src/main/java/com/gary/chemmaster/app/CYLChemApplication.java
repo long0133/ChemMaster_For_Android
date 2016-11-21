@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.gary.chemmaster.Dao.CYLEditorChoiceDao;
 import com.gary.chemmaster.Dao.CYLNameReactionDao;
+import com.gary.chemmaster.Dao.CYLTotalSynDao;
 import com.gary.chemmaster.util.CYLPreference;
 
 /**
@@ -25,9 +26,13 @@ public class CYLChemApplication extends Application {
     /*EditorChoice数据管理*/
     public static CYLEditorChoiceDao editorChoiceDao;
     public static CYLNameReactionDao nameReactionDao;
+    public static CYLTotalSynDao totalSynDao;
 
     /*广播action*/
-    public static String ACTION_PREPARE_TO_SHOW_LIST = "ACTION_PREPARE_TO_SHOW_LIST";
+    /*设置显示人名反应*/
+    public static String ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST = "ACTION_PREPARE_TO_SHOW_NAME_REACTION_LIST";
+    /*设置显示全合成*/
+    public static String ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS= "ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS";
 
     public static CYLPreference preference;
 
@@ -37,6 +42,7 @@ public class CYLChemApplication extends Application {
 
         editorChoiceDao = CYLEditorChoiceDao.getInstance(getContentResolver(), this);
         nameReactionDao = CYLNameReactionDao.getInstance(this);
+        totalSynDao = CYLTotalSynDao.getInstance(this);
 
         CYLPreference.init(getApplicationContext());
         preference = CYLPreference.getInstance();

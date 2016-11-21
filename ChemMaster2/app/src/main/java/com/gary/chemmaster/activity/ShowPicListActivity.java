@@ -2,10 +2,12 @@ package com.gary.chemmaster.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -14,7 +16,10 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,13 +31,17 @@ import com.gary.chemmaster.CallBack.CYLshowListCallBack;
 import com.gary.chemmaster.CallBack.CommonCallBack;
 import com.gary.chemmaster.R;
 import com.gary.chemmaster.adapter.CYLDetailListAdapter;
+import com.gary.chemmaster.adapter.CYLTotalSynAdapter;
+import com.gary.chemmaster.adapter.CYLTotalSynAlertAdapter;
 import com.gary.chemmaster.app.CYLChemApplication;
 import com.gary.chemmaster.entity.CYLPicEntity;
 import com.gary.chemmaster.entity.CYLReactionDetail;
 import com.gary.chemmaster.model.CYLHttpManager;
+import com.gary.chemmaster.ui.CYLShowDetailDialog;
 import com.gary.chemmaster.util.CYLHttpUtils;
 import com.gary.chemmaster.util.ImgaeLoader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -40,7 +49,7 @@ public class ShowPicListActivity extends AppCompatActivity {
 
     private innerBroadCastReceiver receiver;
     private ListView listView;
-    private CYLDetailListAdapter adapter;
+    private BaseAdapter adapter;
     private ArrayList<CYLReactionDetail> data;
     private LinearLayout detailLL;
     private ScrollView detailScroll;
@@ -65,8 +74,8 @@ public class ShowPicListActivity extends AppCompatActivity {
          imageLoader = new ImgaeLoader(this);
      }
 
-
-    private class InnerOnItemClickListener implements AdapterView.OnItemClickListener
+    /*人名反应点击监听器*/
+    private class InnerReactiongListOnItemClickListener implements AdapterView.OnItemClickListener
     {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -166,6 +175,44 @@ public class ShowPicListActivity extends AppCompatActivity {
         }
     }
 
+    /*全合成点击监听器*/
+    private class InnerTotalSynthesisOnItemClickListener implements AdapterView.OnItemClickListener
+    {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            View item = listView.getChildAt(position);
+            TextView title = (TextView)item.findViewById(R.id.detailTitle);
+
+            /*从集合中获取显示的数据*/
+            ArrayList<CYLReactionDetail> subData = new ArrayList<>();
+
+            Iterator<CYLReactionDetail> iterator = data.iterator();
+
+            while (iterator.hasNext())
+            {
+                CYLReactionDetail detail = iterator.next();
+                if (detail.getName().substring(0,1).contains(title.getText().toString()))
+                {
+                    subData.add(detail);
+                }
+            }
+
+            /*单击后跳出alertview显示具体全合成名称*/
+            CYLShowDetailDialog detailDialog = new CYLShowDetailDialog(ShowPicListActivity.this, subData);
+            detailDialog.show();
+        }
+    }
+
+    class InnerAlertDialogOnClickListener implements DialogInterface.OnClickListener{
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+
+        }
+    }
+
     @Override
     public void onBackPressed() {
 
@@ -185,7 +232,8 @@ public class ShowPicListActivity extends AppCompatActivity {
     {
         receiver = new innerBroadCastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_LIST);
+        filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST);
+        filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS);
         registerReceiver(receiver,filter);
     }
 
@@ -198,15 +246,34 @@ public class ShowPicListActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
 
             /*接受广播显示传过来的数据*/
-            if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_LIST))
+            if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST))
             {
                 data = intent.getParcelableArrayListExtra("info");
 
                 adapter = new CYLDetailListAdapter(ShowPicListActivity.this, data);
                 listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new InnerOnItemClickListener());
+                listView.setOnItemClickListener(new InnerReactiongListOnItemClickListener());
+            }
+            else if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS))
+            {
+                data = intent.getParcelableArrayListExtra("info");
+                String[] alphaB = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T",
+                        "U","V","W","X","Y","Z"};
+                adapter = new CYLTotalSynAdapter(ShowPicListActivity.this,alphaB);
+
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new InnerTotalSynthesisOnItemClickListener());
             }
 
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        unregisterReceiver(receiver);
+
+        super.onDestroy();
+
     }
 }

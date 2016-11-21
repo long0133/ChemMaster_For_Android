@@ -2,6 +2,8 @@ package com.gary.chemmaster.model;
 
 import android.content.Context;
 import android.os.AsyncTask;
+
+import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.CallBack.CYLEditorChoiceCallBack;
 import com.gary.chemmaster.CallBack.CYLRecentCallBack;
 import com.gary.chemmaster.CallBack.CYLshowListCallBack;
@@ -99,8 +101,11 @@ public class CYLHttpManager {
 
     }
 
-    /*获得list显示列表*/
-    public static void setListOfReactionDetail(final Context context, final CYLshowListCallBack<CYLReactionDetail> callBack)
+    /*获得list显示列表
+    * flag:用于区分需要显示哪个模块的内容
+    * */
+
+    public static void setListOfReactionDetail(final Context context, final MouleFlag flag, final CYLshowListCallBack<CYLReactionDetail> callBack)
     {
         AsyncTask<String, String ,List<CYLReactionDetail>> task = new AsyncTask<String, String, List<CYLReactionDetail>>() {
             @Override
@@ -109,9 +114,16 @@ public class CYLHttpManager {
                 List<CYLReactionDetail> list = new ArrayList<>();
 
                 try {
-
-                    CYLHtmlParse parse = new CYLHtmlParse();
-                     list = parse.getNameReactionList(context);
+                    if (flag.equals(MouleFlag.moduleNameReaction))
+                    {
+                        CYLHtmlParse parse = new CYLHtmlParse();
+                        list = parse.getReactionList(context,flag);
+                    }
+                    else if (flag.equals(MouleFlag.moduleTotalSynthesis))
+                    {
+                        CYLHtmlParse parse = new CYLHtmlParse();
+                        list = parse.getReactionList(context,flag);
+                    }
                 }
                 catch (IOException e)
                 {
