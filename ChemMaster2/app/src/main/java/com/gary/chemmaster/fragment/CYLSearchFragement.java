@@ -123,8 +123,6 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
                     public void showDetailContent(List<String> content) {
 
                     }
-
-
                 });
                 break;
 

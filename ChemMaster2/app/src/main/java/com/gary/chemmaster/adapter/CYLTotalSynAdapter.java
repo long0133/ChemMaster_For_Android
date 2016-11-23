@@ -10,16 +10,18 @@ import android.widget.TextView;
 import com.gary.chemmaster.R;
 import com.gary.chemmaster.entity.CYLReactionDetail;
 
+import java.util.ArrayList;
+
 /**
  * Created by gary on 16/11/21.
  */
 public class CYLTotalSynAdapter extends BaseAdapter {
 
-    String[] alphaB;
+    ArrayList<String> alphaB;
     Context context;
     LayoutInflater inflate;
 
-    public CYLTotalSynAdapter(Context context, String[] alphaB) {
+    public CYLTotalSynAdapter(Context context, ArrayList<String> alphaB) {
         this.alphaB = alphaB;
         this.context = context;
         inflate = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -27,7 +29,7 @@ public class CYLTotalSynAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return alphaB.length;
+        return alphaB.size();
     }
 
     @Override
@@ -40,7 +42,7 @@ public class CYLTotalSynAdapter extends BaseAdapter {
 
         TextView textView = (TextView) convertView.findViewById(R.id.detailTitle);
 
-        textView.setText(alphaB[position]);
+        textView.setText(alphaB.get(position));
 
         return convertView;
     }

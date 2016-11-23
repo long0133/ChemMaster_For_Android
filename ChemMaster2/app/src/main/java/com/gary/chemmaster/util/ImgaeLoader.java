@@ -100,8 +100,8 @@ public class ImgaeLoader {
     public void get(String picPath, ImageView imageView, CommonCallBack callBack)
     {
         this.callBack = callBack;
-        CYLPicEntity picEntity = new CYLPicEntity();
 
+        CYLPicEntity picEntity = new CYLPicEntity();
         picEntity.setImageView(imageView);
 
         /*从缓存中取出图片*/
@@ -131,7 +131,7 @@ public class ImgaeLoader {
         }
         else
         {
-            Log.d("cyl", "从文件缓存中取出图片");
+
             /*从文件缓存中取出图片*/
             picEntity.bitmap = BitmapUtils.bitmapLoad(new File(context.getCacheDir(),"image"
                     + picPath.substring(picPath.lastIndexOf("/"))));
@@ -139,13 +139,20 @@ public class ImgaeLoader {
             if (picEntity.bitmap != null)
             {
                 /*取出了图片,在界面上显示并且加载入缓存*/
+                Log.d("cyl", "从文件缓存中取出图片");
                 avatarCache.put(picPath, new SoftReference<Bitmap>(picEntity.bitmap));
                 imageView.setImageBitmap(picEntity.bitmap);
 
             }else
             {
                 /*文件缓存中没有图片, 则向任务队列中加入新的下载任务*/
-                taskList.add(new CYLPicEntity(null, picPath,imageView));
+                if (picPath.matches("(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?"))
+                {
+                    Log.d("cyl", "下载图片 @ " +picPath);
+                    picEntity.setPath(picPath);
+                    taskList.add(picEntity);
+                }
+
 
                 synchronized (loadThread)
                 {
@@ -176,17 +183,18 @@ public class ImgaeLoader {
 
             try
             {
+                Log.d("cyl","下载：" + taskList.toString());
                 while (isLoading)
                 {
                     if(!taskList.isEmpty())
                     {
-                        Log.d("cyl", "下载图片");
                         CYLPicEntity task = taskList.removeFirst();
 
                         task.bitmap = BitmapFactory.decodeStream(CYLHttpUtils.get(task.path));
 
                         /*下载完毕回调*/
                         callBack.doSomeThing(task);
+                        Log.d("cyl","imageLoader 下载完毕");
 
                         Message.obtain(handler,MESSAGE_IMAGE_LOAD,task).sendToTarget();
                     }

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,6 +28,9 @@ import java.util.ArrayList;
 public class CYLShowDetailDialog extends Dialog{
 
     ArrayList<CYLReactionDetail> data;
+    TextView dialogTv;
+    ListView dialogLV;
+
 
     public CYLShowDetailDialog(Context context,ArrayList<CYLReactionDetail>data) {
         super(context);
@@ -64,8 +68,8 @@ public class CYLShowDetailDialog extends Dialog{
         lp.gravity = Gravity.CENTER;
         dialogW.setAttributes(lp);
 
-        TextView dialogTv = (TextView)dialogView.findViewById(R.id.dialog_nameTV);
-        ListView dialogLV = (ListView)dialogView.findViewById(R.id.dialog_show_lv);
+        dialogTv = (TextView)dialogView.findViewById(R.id.dialog_nameTV);
+        dialogLV = (ListView)dialogView.findViewById(R.id.dialog_show_lv);
 
         dialogTv.setText(data.get(0).getName().charAt(0)+"");
 
@@ -73,5 +77,14 @@ public class CYLShowDetailDialog extends Dialog{
 
         setContentView(dialogView);
 
+    }
+
+    public void setListItemClickListener(AdapterView.OnItemClickListener listener)
+    {
+        this.dialogLV.setOnItemClickListener(listener);
+    }
+
+    public ArrayList<CYLReactionDetail> getData() {
+        return data;
     }
 }

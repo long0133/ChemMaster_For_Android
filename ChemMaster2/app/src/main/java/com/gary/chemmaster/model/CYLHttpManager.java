@@ -114,16 +114,16 @@ public class CYLHttpManager {
                 List<CYLReactionDetail> list = new ArrayList<>();
 
                 try {
-                    if (flag.equals(MouleFlag.moduleNameReaction))
-                    {
+//                    if (flag.equals(MouleFlag.moduleNameReaction))
+//                    {
+//                        CYLHtmlParse parse = new CYLHtmlParse();
+//                        list = parse.getReactionList(context,flag);
+//                    }
+//                    else if (flag.equals(MouleFlag.moduleTotalSynthesis))
+//                    {
                         CYLHtmlParse parse = new CYLHtmlParse();
                         list = parse.getReactionList(context,flag);
-                    }
-                    else if (flag.equals(MouleFlag.moduleTotalSynthesis))
-                    {
-                        CYLHtmlParse parse = new CYLHtmlParse();
-                        list = parse.getReactionList(context,flag);
-                    }
+//                    }
                 }
                 catch (IOException e)
                 {
@@ -145,7 +145,7 @@ public class CYLHttpManager {
 
 
     /*获得list显示列表*/
-    public static void setDtailContent(final Context context, final String urlPath, final CYLshowListCallBack<String> callBack )
+    public static void setDtailContent(final Context context, final String urlPath, final MouleFlag flag, final CYLshowListCallBack<String> callBack )
     {
         AsyncTask<String, String ,List<String>> task = new AsyncTask<String, String, List<String>>() {
             @Override
@@ -156,7 +156,14 @@ public class CYLHttpManager {
                 try {
 
                     CYLHtmlParse parse = new CYLHtmlParse();
-                    list = parse.getDetailContentForNameReacton(context, urlPath);
+                    if (flag.equals(MouleFlag.moduleNameReaction))
+                    {
+                        list = parse.getDetailContentForNameReacton(context, urlPath);
+                    }
+                    else if (flag.equals(MouleFlag.moduleTotalSynthesis))
+                    {
+                        list = parse.getDetailContentForTotalSynthesis(context, urlPath);
+                    }
                 }
                 catch (IOException e)
                 {

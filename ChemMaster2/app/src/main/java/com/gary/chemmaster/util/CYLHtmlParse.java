@@ -3,6 +3,7 @@ package com.gary.chemmaster.util;
 import android.content.Context;
 import android.text.Html;
 import android.util.Log;
+import android.widget.ListView;
 
 import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.Dao.CYLNameReactionDao;
@@ -85,11 +86,11 @@ public class CYLHtmlParse {
 
                 if (!urlPath.contains("Highlights"))
                 {
-                    urlPath = "www.organic-chemistry.org/totalsynthesis/"+urlPath;
+                    urlPath = "http://www.organic-chemistry.org/totalsynthesis/"+urlPath;
                 }
                 else
                 {
-                    urlPath = "www.organic-chemistry.org/"+urlPath;
+                    urlPath = "http://www.organic-chemistry.org/"+urlPath;
                 }
 
                 detail.setUrlPath(urlPath);
@@ -172,9 +173,13 @@ public class CYLHtmlParse {
         return list;
     }
 
-    /*获得详情人名反应页面的内容*/
-    public List<String> getDetailContentForNameReacton(Context context, String urlPath) throws IOException
+    /*获得全合成反应详情字符串*/
+    public List<String> getDetailContentForTotalSynthesis(Context context, String urlPath) throws IOException
     {
+        Log.d("cyl","加载全合成反应@"+urlPath);
+        /*获取图片路径的前缀*/
+        String preUrl = urlPath.substring(0,(urlPath.lastIndexOf("/")+1));
+
         List<String> list = new ArrayList<>();
 
         String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(urlPath));
@@ -182,6 +187,42 @@ public class CYLHtmlParse {
         Document doc = Jsoup.parse(htmlStr);
         Elements elements = doc.select("img[src],p");
 
+        for (Element element : elements) {
+
+            Log.i("cyl",element.toString());
+
+            String img = element.attr("src");
+            String p = element.getElementsByTag("p").text();
+
+//
+//            Log.w("cyl","image :"+img);
+//            Log.w("cyl","p :" +p);
+
+            if (img.length() != 0)
+            {
+                if (!img.contains("../") && !img.contains("Logo"))
+                {
+                    list.add(preUrl+img);
+                }
+
+            }
+            if (p.length() != 0) list.add(Html.fromHtml(p).toString());
+        }
+        Log.d("cyl",list.toString());
+
+        return list;
+    }
+
+    /*获得详情人名反应页面的内容*/
+    public List<String> getDetailContentForNameReacton(Context context, String urlPath) throws IOException
+    {
+        Log.d("cyl","加载人名反应");
+        List<String> list = new ArrayList<>();
+
+        String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(urlPath));
+
+        Document doc = Jsoup.parse(htmlStr);
+        Elements elements = doc.select("img[src],p");
 
         for (Element element : elements) {
 
@@ -192,15 +233,17 @@ public class CYLHtmlParse {
                 String img = element.attr("src");
                 String p = element.getElementsByTag("p").text();
 
-                Log.w("cyl","image :"+img);
-                Log.w("cyl","p :" +p);
+
+//                Log.w("cyl","image :"+img);
+//                Log.w("cyl","p :" +p);
 
                 if (img.length() != 0)
                 {
                     if (!img.contains("../") && !img.contains("Logos"))
                     {
-                        list.add("http://www.organic-chemistry.org/namedreactions/"+img);
+                            list.add("http://www.organic-chemistry.org/namedreactions/"+img);
                     }
+
                 }
                 if (p.length() != 0) list.add(Html.fromHtml(p).toString());
             }

@@ -26,7 +26,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.CallBack.CYLshowListCallBack;
 import com.gary.chemmaster.CallBack.CommonCallBack;
 import com.gary.chemmaster.R;
@@ -41,6 +43,8 @@ import com.gary.chemmaster.ui.CYLShowDetailDialog;
 import com.gary.chemmaster.util.CYLHttpUtils;
 import com.gary.chemmaster.util.ImgaeLoader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -80,9 +84,7 @@ public class ShowPicListActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-            detailLL.removeAllViews();
-
-            CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(), new CYLshowListCallBack<String>() {
+            CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(),MouleFlag.moduleNameReaction, new CYLshowListCallBack<String>() {
 
                 /*ignore*/
                 @Override
@@ -93,81 +95,7 @@ public class ShowPicListActivity extends AppCompatActivity {
                 @Override
                 public void showDetailContent(List<String> content) {
 
-                    /*显示详情页面*/
-                    detailScroll.setVisibility(View.VISIBLE);
-
-                    boolean isMeetRecentLiterature = false;
-
-                    for (int i = 0; i < content.size();i++)
-                    {
-                        String str = content.get(i);
-
-                        if (str.contains("http"))
-                        {
-                            final ImageView imageView = new ImageView(ShowPicListActivity.this);
-
-                            imageLoader.get(str, imageView, new CommonCallBack() {
-                                @Override
-                                public Object doSomeThing(final Object o) {
-
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-
-                                            CYLPicEntity picEntity = (CYLPicEntity) o;
-                                            ImageView iv = picEntity.getImageView();
-
-                                            /*计算图片放大尺寸*/
-                                            DisplayMetrics metrics = new DisplayMetrics();
-                                            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-                                            double scale = (metrics.widthPixels * 1.0)/picEntity.bitmap.getWidth();
-                                            int height = (int)(picEntity.bitmap.getHeight()*scale);
-
-                                            final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(metrics.widthPixels,height);
-
-                                            if (iv != null)
-                                            {
-                                                iv.setLayoutParams(lp);
-
-                                                iv.setImageBitmap(picEntity.bitmap);
-                                            }
-                                        }
-                                    });
-
-                                    return null;
-                                }
-                            });
-
-                            detailLL.addView(imageView);
-                        }
-                        else
-                        {
-                            TextView textView = new TextView(ShowPicListActivity.this);
-
-                            /*处理字符串*/
-                            if (str.equals("Further Information Literature") || str.contains("Related Reactions")) continue;
-                            if (str.equals("Recent Literature")) isMeetRecentLiterature = true;
-                            if (isMeetRecentLiterature)
-                            {
-                                str = "     "+str;
-                                textView.setTextSize(15);
-                                textView.setTextColor(getResources().getColor(R.color.colorSub));
-                            }
-                            else
-                            {
-
-                                textView.setTextSize(18);
-                                str = "     "+str;
-                            }
-
-
-                            textView.setText(str);
-                            detailLL.addView(textView);
-                            Log.i("cyl",str);
-                        }
-
-                    }
+                    showViewOfContent(content);
 
                 }
             });
@@ -182,8 +110,7 @@ public class ShowPicListActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            View item = listView.getChildAt(position);
-            TextView title = (TextView)item.findViewById(R.id.detailTitle);
+            TextView title = (TextView)view.findViewById(R.id.detailTitle);
 
             /*从集合中获取显示的数据*/
             ArrayList<CYLReactionDetail> subData = new ArrayList<>();
@@ -200,8 +127,32 @@ public class ShowPicListActivity extends AppCompatActivity {
             }
 
             /*单击后跳出alertview显示具体全合成名称*/
-            CYLShowDetailDialog detailDialog = new CYLShowDetailDialog(ShowPicListActivity.this, subData);
+            final CYLShowDetailDialog detailDialog = new CYLShowDetailDialog(ShowPicListActivity.this, subData);
             detailDialog.show();
+
+            /*设置alertview的list的监听器，点击显示详细界面*/
+            detailDialog.setListItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    ArrayList<CYLReactionDetail> data = detailDialog.getData();
+
+                    CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(), MouleFlag.moduleTotalSynthesis, new CYLshowListCallBack<String>() {
+                        @Override
+                        public void goToShowList(List<String> list) {
+
+                        }
+
+                        @Override
+                        public void showDetailContent(List<String> content) {
+
+                            showViewOfContent(content);
+                            detailDialog.dismiss();
+
+                        }
+                    });
+
+                }
+            });
         }
     }
 
@@ -225,6 +176,89 @@ public class ShowPicListActivity extends AppCompatActivity {
             super.onBackPressed();
         }
 
+    }
+
+    /*根据传入的字符串内容显示界面*/
+    private void showViewOfContent(List<String> content)
+    {
+           /*显示详情页面*/
+        detailScroll.setVisibility(View.VISIBLE);
+        detailLL.removeAllViews();
+
+        Toast.makeText(this,"正在加载图片",Toast.LENGTH_SHORT).show();
+
+        boolean isMeetRecentLiterature = false;
+
+        for (int i = 0; i < content.size();i++)
+        {
+            String str = content.get(i);
+
+            if (str.contains("http"))
+            {
+                final ImageView imageView = new ImageView(ShowPicListActivity.this);
+
+                imageLoader.get(str, imageView, new CommonCallBack() {
+                    @Override
+                    public Object doSomeThing(final Object o) {
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                CYLPicEntity picEntity = (CYLPicEntity) o;
+                                ImageView iv = picEntity.getImageView();
+
+                                            /*计算图片放大尺寸*/
+                                DisplayMetrics metrics = new DisplayMetrics();
+                                getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                                double scale = (metrics.widthPixels * 1.0)/picEntity.bitmap.getWidth();
+                                int height = (int)(picEntity.bitmap.getHeight()*scale);
+
+                                final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(metrics.widthPixels,height);
+
+                                if (iv != null)
+                                {
+                                    iv.setLayoutParams(lp);
+
+                                    iv.setImageBitmap(picEntity.bitmap);
+                                }
+                            }
+                        });
+
+                        return null;
+                    }
+                });
+
+                detailLL.addView(imageView);
+            }
+            else
+            {
+                TextView textView = new TextView(ShowPicListActivity.this);
+
+                            /*处理字符串*/
+                if (str.equals("Further Information Literature") || str.contains("Related Reactions")) continue;
+                if (str.equals("Recent Literature")) isMeetRecentLiterature = true;
+                if (isMeetRecentLiterature)
+                {
+                    str = "     "+str;
+                    textView.setTextSize(15);
+                    textView.setTextColor(getResources().getColor(R.color.colorSub));
+                }
+                else
+                {
+
+                    textView.setTextSize(18);
+                    str = "     "+str;
+                }
+
+
+                textView.setText(str);
+                detailLL.addView(textView);
+                Log.i("cyl",str);
+            }
+
+        }
     }
 
     /*设置广播接受者*/
@@ -257,9 +291,26 @@ public class ShowPicListActivity extends AppCompatActivity {
             else if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS))
             {
                 data = intent.getParcelableArrayListExtra("info");
-                String[] alphaB = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T",
-                        "U","V","W","X","Y","Z"};
-                adapter = new CYLTotalSynAdapter(ShowPicListActivity.this,alphaB);
+                ArrayList<String> alphabs = new ArrayList<>();
+
+                /*获得全合成list标题*/
+                for (int i = 0; i < data.size(); i++)
+                {
+                    String T = data.get(i).getName().substring(0,1).toUpperCase();
+                    if (!alphabs.contains(T) && T.matches("[A-Z]"))
+                    {
+                        alphabs.add(T);
+                    }
+                }
+
+                Collections.sort(alphabs, new Comparator<String>() {
+                    @Override
+                    public int compare(String o1, String o2) {
+                        return o1.charAt(0) - o2.charAt(0);
+                    }
+                });
+
+                adapter = new CYLTotalSynAdapter(ShowPicListActivity.this,alphabs);
 
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener(new InnerTotalSynthesisOnItemClickListener());
