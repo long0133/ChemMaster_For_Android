@@ -114,16 +114,8 @@ public class CYLHttpManager {
                 List<CYLReactionDetail> list = new ArrayList<>();
 
                 try {
-//                    if (flag.equals(MouleFlag.moduleNameReaction))
-//                    {
-//                        CYLHtmlParse parse = new CYLHtmlParse();
-//                        list = parse.getReactionList(context,flag);
-//                    }
-//                    else if (flag.equals(MouleFlag.moduleTotalSynthesis))
-//                    {
                         CYLHtmlParse parse = new CYLHtmlParse();
                         list = parse.getReactionList(context,flag);
-//                    }
                 }
                 catch (IOException e)
                 {
@@ -142,6 +134,8 @@ public class CYLHttpManager {
 
         task.execute();
     }
+
+
 
 
     /*获得list显示列表*/
@@ -163,6 +157,10 @@ public class CYLHttpManager {
                     else if (flag.equals(MouleFlag.moduleTotalSynthesis))
                     {
                         list = parse.getDetailContentForTotalSynthesis(context, urlPath);
+                    }
+                    else if (flag.equals(MouleFlag.moduleHighLightOfYear))
+                    {
+                        list = parse.getDetailContentForHighLight(context,urlPath);
                     }
                 }
                 catch (IOException e)

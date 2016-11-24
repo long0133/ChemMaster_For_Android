@@ -84,7 +84,8 @@ public class CYLDBOpenHelper extends SQLiteOpenHelper {
                         "urlpath VARCHAR(100)," +
                         "year VARCHAR(10)," +
                         "author VARCHAR(50)," +
-                        "bitmap BLOB)";
+                        "bitmap BLOB," +
+                        "typenum INTEGER)";
 
                 Log.d("cyl",TOTAL_SYNTHESIS_LIST_TABLE);
 

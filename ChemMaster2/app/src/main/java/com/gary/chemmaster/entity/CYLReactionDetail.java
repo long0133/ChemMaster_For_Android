@@ -8,6 +8,8 @@ import android.os.Parcelable;
 import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.Dao.CYLNameReactionDao;
 
+import java.util.List;
+
 /**
  * Created by gary on 16/11/16.
  */
@@ -17,8 +19,16 @@ public class CYLReactionDetail implements Parcelable {
     private String Desc;
     private String UrlPath;
     private String name;
+    /*高亮反应的yearUrl导向这一年的所有高亮文章*/
+    private String HighLightYearUrl;
+    /* 全合成中文章的年限*/
     private String year;
+    private String month;
     private String author;
+    private int typeNum;
+    public static int IS_FOR_NAME_REACTION = 0;
+    public static  int IS_FOR_TOTAL_SYN = 1;
+    public static  int IS_FOR_HIGH_LIGHT = 2;
 
     public static final Parcelable.Creator<CYLReactionDetail> CREATOR
             = new Parcelable.Creator<CYLReactionDetail>(){
@@ -31,8 +41,8 @@ public class CYLReactionDetail implements Parcelable {
             detail.setName(source.readString());
             detail.setYear(source.readString());
             detail.setAuthor(source.readString());
-
-
+            detail.setTypeNum(source.readInt());
+            detail.setHighLightYearUrl(source.readString());
             return detail;
         }
 
@@ -55,9 +65,15 @@ public class CYLReactionDetail implements Parcelable {
         dest.writeString(name);
         dest.writeString(year);
         dest.writeString(author);
+        dest.writeInt(typeNum);
+        dest.writeString(getHighLightYearUrl());
 
     }
 
+
+    public void setMonth(String month) {
+        this.month = month;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -83,6 +99,26 @@ public class CYLReactionDetail implements Parcelable {
         this.author = author;
     }
 
+
+    public void setTypeNum(int typeNum) {
+        this.typeNum = typeNum;
+    }
+
+    public void setHighLightYearUrl(String highLightYearUrl) {
+        HighLightYearUrl = highLightYearUrl;
+    }
+
+    public String getHighLightYearUrl() {
+        return HighLightYearUrl;
+    }
+
+    public int getTypeNum() {
+        return typeNum;
+    }
+
+    public String getMonth() {
+        return month;
+    }
 
     public String getAuthor() {
         return author;

@@ -33,6 +33,8 @@ public class CYLChemApplication extends Application {
     public static String ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST = "ACTION_PREPARE_TO_SHOW_NAME_REACTION_LIST";
     /*设置显示全合成*/
     public static String ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS= "ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS";
+    /*设置显示高亮文章*/
+    public static String ACTION_PREPARE_TO_SHOW_HIGHTLIGHT= "ACTION_PREPARE_TO_SHOW_HIGHLIGHT";
 
     public static CYLPreference preference;
 

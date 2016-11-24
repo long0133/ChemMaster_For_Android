@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +52,7 @@ public class CYLShowDetailDialog extends Dialog{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*取出dialog的title框*/
+        /*除去dialog的title框*/
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setCanceledOnTouchOutside(true);
 
@@ -71,7 +72,18 @@ public class CYLShowDetailDialog extends Dialog{
         dialogTv = (TextView)dialogView.findViewById(R.id.dialog_nameTV);
         dialogLV = (ListView)dialogView.findViewById(R.id.dialog_show_lv);
 
-        dialogTv.setText(data.get(0).getName().charAt(0)+"");
+        if (data.get(0).getTypeNum() == CYLReactionDetail.IS_FOR_TOTAL_SYN)
+        {
+            /*显示全合成时的标题设置*/
+            dialogTv.setText(data.get(0).getName().charAt(0)+"");
+        }
+        else if (data.get(0).getTypeNum() == CYLReactionDetail.IS_FOR_HIGH_LIGHT)
+        {
+            String year = data.get(0).getHighLightYearUrl();
+            String yearTitle = "Total Synthesis Of Year " + year.substring(year.indexOf("2"),year.lastIndexOf("/"));
+            dialogTv.setTextSize(20);
+            dialogTv.setText(yearTitle);
+        }
 
         dialogLV.setAdapter(new CYLTotalSynAlertAdapter(data,getContext()));
 

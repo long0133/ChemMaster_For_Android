@@ -8,6 +8,7 @@ import android.widget.ListView;
 import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.Dao.CYLNameReactionDao;
 import com.gary.chemmaster.Dao.CYLTotalSynDao;
+import com.gary.chemmaster.activity.ShowPicListActivity;
 import com.gary.chemmaster.app.CYLChemApplication;
 import com.gary.chemmaster.entity.CYLReactionDetail;
 
@@ -19,6 +20,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ToDoubleBiFunction;
 
 /**
  * Created by gary on 16/11/16.
@@ -40,10 +42,12 @@ public class CYLHtmlParse {
 
         if (flag.equals(MouleFlag.moduleNameReaction))
         {
+            /*人名反应*/
             list = getNameReactionList(list);
         }
         else if (flag.equals(MouleFlag.moduleTotalSynthesis))
         {
+            /*全合成*/
             Log.d("cyl","数据库中加载数据");
 
             list = CYLChemApplication.totalSynDao.getAllTotalSynReaction();
@@ -52,7 +56,16 @@ public class CYLHtmlParse {
             {
                 list = getTotalSynthesisList(list);
             }
+        }
+        else if (flag.equals(MouleFlag.moduleHightLight))
+        {
+            /*高亮文章的year*/
+            list = getHighLightYearUrlList();
 
+        }
+        else if (flag.equals(MouleFlag.moduleHighLightOfYear))
+        {
+            list = getHighLighOfYear(list);
         }
 
         return list;
@@ -78,6 +91,7 @@ public class CYLHtmlParse {
                 Element link = links.get(i);
 
                 CYLReactionDetail detail = new CYLReactionDetail();
+                detail.setTypeNum(CYLReactionDetail.IS_FOR_TOTAL_SYN);
 
                 /*获取相关内容的url*/
                 String urlPath = link.child(0).getElementsByTag("a").attr("href").toString();
@@ -137,6 +151,7 @@ public class CYLHtmlParse {
             {
 
                 CYLReactionDetail nameReaction = new CYLReactionDetail();
+                nameReaction.setTypeNum(CYLReactionDetail.IS_FOR_NAME_REACTION);
 
                 /*设置人名反应详情页的url*/
                 nameReaction.setUrlPath("http://www.organic-chemistry.org/namedreactions/"+name);
@@ -170,6 +185,62 @@ public class CYLHtmlParse {
         }
 
         Log.d("cyl","人名反应 ："+list.size()+"个");
+        return list;
+    }
+
+    /*获得高亮文章的year表*/
+    public List<CYLReactionDetail> getHighLightYearUrlList() throws IOException
+    {
+        List<CYLReactionDetail> years = new ArrayList<>();
+
+        String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(CYLUrlFactory.getUrlOfHighLightYearList()));
+
+        Document doc = Jsoup.parse(htmlStr);
+
+        Elements links =  doc.select("a[href]");
+
+        for(Element link : links)
+        {
+            String href = link.attr("href").toString();
+
+            if (href.contains("shtm") && href.substring(0,4).matches("[0-9]+"))
+            {
+                CYLReactionDetail detail = new CYLReactionDetail();
+                detail.setTypeNum(CYLReactionDetail.IS_FOR_HIGH_LIGHT);
+                String year = href.split("/")[0];
+                detail.setHighLightYearUrl("http://www.organic-chemistry.org/Highlights/"+year+"/index.shtm");
+                years.add(detail);
+            }
+        }
+
+        return years;
+    }
+
+    /*获得高亮反应所选年的所有内容list*/
+    public List<CYLReactionDetail> getHighLighOfYear(List<CYLReactionDetail> list) throws IOException
+    {
+        /*获得所选一年的所有高亮文章*/
+        String p = ShowPicListActivity.selecedYearUrl;
+        String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(p));
+
+        Document doc = Jsoup.parse(htmlStr);
+        Elements links = doc.select("a[href$=shtm],title");
+
+        for(Element link:links) {
+
+            CYLReactionDetail detail = new CYLReactionDetail();
+            if (!link.attr("href").toString().contains("index"))
+            {
+                detail.setTypeNum(CYLReactionDetail.IS_FOR_HIGH_LIGHT);
+                detail.setHighLightYearUrl(p);
+                detail.setUrlPath(p.substring(0,(p.lastIndexOf("/")+1)) + link.attr("href").toString());
+                detail.setName(link.getElementsByTag("a").text());
+
+                if (detail.getUrlPath().contains("shtm")) list.add(detail);
+            }
+
+        }
+
         return list;
     }
 
@@ -254,15 +325,28 @@ public class CYLHtmlParse {
         return list;
     }
 
-    public String treatName(String name)
+
+    /*获得某一高亮文章的详情内容*/
+    public List<String> getDetailContentForHighLight(Context context, String urlPath) throws IOException
     {
-        name = name.toLowerCase().replace("-", "");
-        name = name.replace(" ", "_");
-        name = name.replace("'", "");
-        name = name.replace(",", "");
-        name = name.replace("(", "_");
-        name = name.replace(")", "_");
-        return name;
+        List<String> list = new ArrayList<>();
+
+        String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(urlPath));
+
+        Document doc = Jsoup.parse(htmlStr);
+        Elements elements = doc.select("img[src$=GIF],p");
+
+        for (Element element : elements) {
+            /*解析出显示内容*/
+            String p = element.getElementsByTag("p").text();
+            if (p.length() != 0) list.add(p);
+
+            String url = urlPath.substring(0,(urlPath.lastIndexOf("/")+1)) + element.attr("src");
+            if (url.length() != 0 && !url.contains("Logos") && url.contains("GIF")) list.add(url);
+        }
+
+        return list;
     }
+
 
 }

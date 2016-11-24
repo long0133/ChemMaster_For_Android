@@ -6,6 +6,9 @@ package com.gary.chemmaster.CYLEnum;
 public enum MouleFlag {
     moduleNameReaction,
     moduleTotalSynthesis,
+    /*获得高亮文章年列表*/
     moduleHightLight,
-    moduleTools
+    moduleTools,
+    /*获得一年的高亮文章列表*/
+    moduleHighLightOfYear
 }

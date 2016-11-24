@@ -127,6 +127,27 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.ShowHightLightBtn:
+                /*跳转界面*/
+                Intent Hintent = new Intent(getContext(), ShowPicListActivity.class);
+                startActivity(Hintent);
+
+                CYLHttpManager.setListOfReactionDetail(getContext(), MouleFlag.moduleHightLight, new CYLshowListCallBack<CYLReactionDetail>() {
+
+                    @Override
+                    public void goToShowList(List<CYLReactionDetail> list) {
+
+                        /*发送广播*/
+                        Intent broadCast = new Intent(CYLChemApplication.ACTION_PREPARE_TO_SHOW_HIGHTLIGHT);
+                        broadCast.putParcelableArrayListExtra("info",new ArrayList<CYLReactionDetail>(list));
+                        getContext().sendBroadcast(broadCast);
+                    }
+
+                    /*ignore*/
+                    @Override
+                    public void showDetailContent(List<String> content) {
+
+                    }
+                });
                 break;
 
             case R.id.showToolsBtn:

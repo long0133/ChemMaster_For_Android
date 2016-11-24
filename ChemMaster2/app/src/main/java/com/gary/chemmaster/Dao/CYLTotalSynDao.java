@@ -45,7 +45,8 @@ public class CYLTotalSynDao {
                 "urlpath" ,
                 "year",
                 "author",
-                "bitmap"},null,null,null,null,null);
+                "bitmap",
+                "typenum"},null,null,null,null,null);
 
         while (cursor.moveToNext())
         {
@@ -79,7 +80,8 @@ public class CYLTotalSynDao {
                 "urlpath",
                 "year",
                 "author",
-                "bitmap"},selection,selectionArgs,null,null,null);
+                "bitmap",
+                "typenum"},selection,selectionArgs,null,null,null);
 
         CYLReactionDetail reaction = null;
 
@@ -91,7 +93,7 @@ public class CYLTotalSynDao {
             reaction.setYear(cursor.getString(4));
             reaction.setAuthor(cursor.getString(5));
             reaction.setPicture(cursor.getBlob(6));
-
+            reaction.setTypeNum(CYLReactionDetail.IS_FOR_TOTAL_SYN);
         }
 
         cursor.close();
@@ -112,6 +114,7 @@ public class CYLTotalSynDao {
         values.put("year", reaction.getYear());
         values.put("author",reaction.getAuthor());
         values.put("bitmap", reaction.getPicture());
+        values.put("typenum",reaction.getTypeNum());
 
         return db.insert(totalSynthesisListTable,null, values);
     }

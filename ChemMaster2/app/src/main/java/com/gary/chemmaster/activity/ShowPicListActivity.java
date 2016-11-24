@@ -33,6 +33,7 @@ import com.gary.chemmaster.CallBack.CYLshowListCallBack;
 import com.gary.chemmaster.CallBack.CommonCallBack;
 import com.gary.chemmaster.R;
 import com.gary.chemmaster.adapter.CYLDetailListAdapter;
+import com.gary.chemmaster.adapter.CYLHighLightAdapter;
 import com.gary.chemmaster.adapter.CYLTotalSynAdapter;
 import com.gary.chemmaster.adapter.CYLTotalSynAlertAdapter;
 import com.gary.chemmaster.app.CYLChemApplication;
@@ -120,6 +121,7 @@ public class ShowPicListActivity extends AppCompatActivity {
             while (iterator.hasNext())
             {
                 CYLReactionDetail detail = iterator.next();
+                detail.setTypeNum(CYLReactionDetail.IS_FOR_TOTAL_SYN);
                 if (detail.getName().substring(0,1).contains(title.getText().toString()))
                 {
                     subData.add(detail);
@@ -137,6 +139,8 @@ public class ShowPicListActivity extends AppCompatActivity {
                     ArrayList<CYLReactionDetail> data = detailDialog.getData();
 
                     CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(), MouleFlag.moduleTotalSynthesis, new CYLshowListCallBack<String>() {
+
+                        /*ignore*/
                         @Override
                         public void goToShowList(List<String> list) {
 
@@ -156,10 +160,57 @@ public class ShowPicListActivity extends AppCompatActivity {
         }
     }
 
-    class InnerAlertDialogOnClickListener implements DialogInterface.OnClickListener{
-
+    /*高亮文章的监听器*/
+    public static String selecedYearUrl;
+    private class InnerHighLightOnItemClickListener implements AdapterView.OnItemClickListener
+    {
         @Override
-        public void onClick(DialogInterface dialog, int which) {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            selecedYearUrl = data.get(position).getHighLightYearUrl();
+
+            CYLHttpManager.setListOfReactionDetail(ShowPicListActivity.this, MouleFlag.moduleHighLightOfYear, new CYLshowListCallBack<CYLReactionDetail>() {
+
+                /*点击显示一年的高亮文章*/
+                @Override
+                public void goToShowList(List<CYLReactionDetail> list) {
+
+                    ArrayList<CYLReactionDetail> arrList = new ArrayList<CYLReactionDetail>(list);
+                    final CYLShowDetailDialog dialog = new CYLShowDetailDialog(ShowPicListActivity.this,arrList);
+                    dialog.show();
+
+                    /*点击显示某一高亮文章的详情*/
+                    dialog.setListItemClickListener(new AdapterView.OnItemClickListener() {
+
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                            List<CYLReactionDetail> data = dialog.getData();
+                            CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(), MouleFlag.moduleHighLightOfYear, new CYLshowListCallBack<String>() {
+                                @Override
+                                public void goToShowList(List<String> list) {
+
+                                }
+
+                                @Override
+                                public void showDetailContent(List<String> content) {
+
+                                    showViewOfContent(content);
+                                    dialog.dismiss();
+
+                                }
+                            });
+
+                        }
+                    });
+                }
+
+                @Override
+                public void showDetailContent(List<String> content) {
+
+                }
+            });
+
 
         }
     }
@@ -268,6 +319,7 @@ public class ShowPicListActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST);
         filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS);
+        filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_HIGHTLIGHT);
         registerReceiver(receiver,filter);
     }
 
@@ -279,10 +331,12 @@ public class ShowPicListActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            data = intent.getParcelableArrayListExtra("info");
+
             /*接受广播显示传过来的数据*/
             if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST))
             {
-                data = intent.getParcelableArrayListExtra("info");
+                /*人名反应*/
 
                 adapter = new CYLDetailListAdapter(ShowPicListActivity.this, data);
                 listView.setAdapter(adapter);
@@ -290,7 +344,8 @@ public class ShowPicListActivity extends AppCompatActivity {
             }
             else if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS))
             {
-                data = intent.getParcelableArrayListExtra("info");
+                /*全合成*/
+
                 ArrayList<String> alphabs = new ArrayList<>();
 
                 /*获得全合成list标题*/
@@ -314,6 +369,13 @@ public class ShowPicListActivity extends AppCompatActivity {
 
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener(new InnerTotalSynthesisOnItemClickListener());
+            }
+            else if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_HIGHTLIGHT))
+            {
+                /*高亮文章*/
+                /*获得高亮文章的year 与其url*/
+                listView.setAdapter(new CYLHighLightAdapter(ShowPicListActivity.this,data));
+                listView.setOnItemClickListener(new InnerHighLightOnItemClickListener());
             }
 
         }

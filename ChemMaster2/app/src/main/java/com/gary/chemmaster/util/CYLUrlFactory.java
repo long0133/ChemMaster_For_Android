@@ -46,5 +46,9 @@ public class CYLUrlFactory {
         return "http://www.organic-chemistry.org/totalsynthesis/";
     }
 
+    public static String getUrlOfHighLightYearList()
+    {
+        return "http://www.organic-chemistry.org/Highlights/";
+    }
 
 }
