@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +21,13 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gary.chemmaster.CallBack.CYLEditorChoiceCallBack;
 import com.gary.chemmaster.CallBack.CYLRecentCallBack;
 import com.gary.chemmaster.CallBack.CommonCallBack;
 import com.gary.chemmaster.R;
+import com.gary.chemmaster.adapter.CYLBrifViewPagerAdapter;
 import com.gary.chemmaster.entity.CYLEditor;
 import com.gary.chemmaster.entity.CYLPicEntity;
 import com.gary.chemmaster.ui.CYLViewPager;
@@ -36,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import com.gary.chemmaster.util.ImgaeLoader;
 
 /**
  * Created by gary on 2016/11/10.
@@ -46,9 +50,13 @@ public class CYLMainFragement extends Fragment {
     private InnerEditorPagerAdapter adapter;
     List<CYLEditor> RecentList;
 
+    private LinearLayout detailLL;
+    private ScrollView detailScrollV;
+    private ImgaeLoader imageLoader;
+
     RadioGroup indicator;
 
-    /*ViewPager显示的内容*/
+    /*******************************最新内容简介的展示VIEWPAGER******************************************/
     List<LinearLayout> relativeLayouts;
     private ImgaeLoader imgaeLoader;
     private Timer picTimer;
@@ -80,6 +88,7 @@ public class CYLMainFragement extends Fragment {
         imgaeLoader = new ImgaeLoader(getContext());
 
        initView(view);
+        initBrifView(view);
 
         getInfoToShow();
 
@@ -92,6 +101,13 @@ public class CYLMainFragement extends Fragment {
         indicator = (RadioGroup) view.findViewById(R.id.indicator);
         indicator.setVisibility(View.INVISIBLE);
         pager_editorsuggest = (CYLViewPager) view.findViewById(R.id.Viewpager_main_editorsuggest);
+        detailLL = (LinearLayout) view.findViewById(R.id.detailContentLLForMain);
+        detailScrollV = (ScrollView) view.findViewById(R.id.detailScrollVForMain);
+
+        imageLoader = new ImgaeLoader(getContext());
+
+        detailScrollV.setVisibility(View.INVISIBLE);
+
         indicator.check(0);
     }
 
@@ -270,6 +286,90 @@ public class CYLMainFragement extends Fragment {
                     /*修正indicator*/
                     indicator.check(pager_editorsuggest.getCurrentItem()+1);
 
+                    break;
+            }
+
+        }
+    }
+
+
+    /*******************************最新内容简介的展示VIEWPAGER******************************************/
+    private CYLViewPager Brif_ViewPager;
+    private  RadioGroup Brif_RadioGroup;
+
+    private void initBrifView(View view)
+    {
+        Brif_ViewPager = (CYLViewPager) view.findViewById(R.id.brifViewPager);
+        Brif_RadioGroup = (RadioGroup) view.findViewById(R.id.brif_RadioGroup);
+
+        Brif_RadioGroup.setOnCheckedChangeListener(new InnerBrifRadioGroupOnCheckedListener());
+        Brif_ViewPager.setOnPageChangeListener(new InnerBrifViewPagerChangeListener());
+        Brif_ViewPager.setOffscreenPageLimit(2);
+
+        setAdapterForBrif();
+    }
+
+    private void setAdapterForBrif()
+    {
+        List<Fragment> fragments = new ArrayList<>();
+
+        fragments.add(new Brif_HighLightFragment());
+        fragments.add(new Brif_TotalSynFrangment());
+        fragments.add(new Brif_NameReacFragment());
+
+        Brif_ViewPager.setAdapter(new CYLBrifViewPagerAdapter(getFragmentManager(),fragments));
+    }
+
+    class InnerBrifViewPagerChangeListener implements ViewPager.OnPageChangeListener
+    {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+
+            switch (position)
+            {
+                case 0:
+                    Brif_RadioGroup.check(R.id.brif_highlight);
+                    break;
+
+                case 1:
+                    Brif_RadioGroup.check(R.id.brif_totalSynthesis);
+                    break;
+
+                case 2:
+                    Brif_RadioGroup.check(R.id.brif_reaction);
+                    break;
+            }
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    }
+
+    class InnerBrifRadioGroupOnCheckedListener implements RadioGroup.OnCheckedChangeListener
+    {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+            switch (checkedId)
+            {
+                case R.id.brif_highlight:
+                    Brif_ViewPager.setCurrentItem(0);
+                    break;
+
+                case R.id.brif_totalSynthesis:
+                    Brif_ViewPager.setCurrentItem(1);
+                    break;
+
+                case R.id.brif_reaction:
+                    Brif_ViewPager.setCurrentItem(2);
                     break;
             }
 

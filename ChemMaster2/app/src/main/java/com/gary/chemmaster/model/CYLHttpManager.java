@@ -7,6 +7,7 @@ import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.CallBack.CYLEditorChoiceCallBack;
 import com.gary.chemmaster.CallBack.CYLRecentCallBack;
 import com.gary.chemmaster.CallBack.CYLshowListCallBack;
+import com.gary.chemmaster.entity.CYLChemTool;
 import com.gary.chemmaster.entity.CYLEditor;
 import com.gary.chemmaster.entity.CYLEditor_Doi_Pub;
 
@@ -101,7 +102,7 @@ public class CYLHttpManager {
 
     }
 
-    /*获得list显示列表
+    /*获得人名反应或者全合成list显示列表
     * flag:用于区分需要显示哪个模块的内容
     * */
 
@@ -135,10 +136,36 @@ public class CYLHttpManager {
         task.execute();
     }
 
+    /*获得化学常用工具列表*/
+    public static void setListOfChemTool(final Context context, final CYLshowListCallBack<CYLChemTool> callBack)
+    {
+        AsyncTask<String,String,List<CYLChemTool>> task = new AsyncTask<String, String, List<CYLChemTool>>() {
+            @Override
+            protected List<CYLChemTool> doInBackground(String... params) {
 
+                List<CYLChemTool> list = null;
+                try
+                {
+                    CYLHtmlParse parse = new CYLHtmlParse();
+                    list = parse.getChemToolList(context);
+                }catch (IOException e)
+                {
 
+                }
 
-    /*获得list显示列表*/
+                return list;
+            }
+
+            @Override
+            protected void onPostExecute(List<CYLChemTool> cylChemTools) {
+                callBack.goToShowList(cylChemTools);
+            }
+        };
+
+        task.execute();
+    }
+
+    /*获得人名反应，或者全合成点击项的详细内容*/
     public static void setDtailContent(final Context context, final String urlPath, final MouleFlag flag, final CYLshowListCallBack<String> callBack )
     {
         AsyncTask<String, String ,List<String>> task = new AsyncTask<String, String, List<String>>() {
@@ -178,6 +205,37 @@ public class CYLHttpManager {
 
             }
         };
+
+        task.execute();
+    }
+
+    public static void setSpecifiedChemTool(final Context context, final String urlPath, final CYLshowListCallBack<CYLChemTool> callBack)
+    {
+        AsyncTask<String, String ,List<CYLChemTool>> task = new AsyncTask<String, String, List<CYLChemTool>>() {
+
+            @Override
+            protected List<CYLChemTool> doInBackground(String... params) {
+
+                List<CYLChemTool> tools = null;
+
+                try
+                {
+                    CYLHtmlParse parse = new CYLHtmlParse();
+                    tools = parse.getSpecifiedChemToolList(context,urlPath);
+                }
+                catch (IOException e)
+                {
+
+                }
+
+                return tools;
+            }
+
+            @Override
+            protected void onPostExecute(List<CYLChemTool> cylChemTools) {
+                callBack.goToShowList(cylChemTools);
+            }
+        } ;
 
         task.execute();
     }

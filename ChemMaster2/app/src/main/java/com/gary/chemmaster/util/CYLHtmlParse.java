@@ -10,6 +10,7 @@ import com.gary.chemmaster.Dao.CYLNameReactionDao;
 import com.gary.chemmaster.Dao.CYLTotalSynDao;
 import com.gary.chemmaster.activity.ShowPicListActivity;
 import com.gary.chemmaster.app.CYLChemApplication;
+import com.gary.chemmaster.entity.CYLChemTool;
 import com.gary.chemmaster.entity.CYLReactionDetail;
 
 import org.jsoup.Jsoup;
@@ -244,6 +245,36 @@ public class CYLHtmlParse {
         return list;
     }
 
+
+    public List<CYLReactionDetail> getHighLighOfYear(List<CYLReactionDetail> list, String selectedYearUrl) throws IOException
+    {
+        /*获得所选一年的所有高亮文章*/
+        String p = selectedYearUrl;
+        String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(p));
+
+        Document doc = Jsoup.parse(htmlStr);
+        Elements links = doc.select("a[href$=shtm],title");
+
+        for(Element link:links) {
+
+            CYLReactionDetail detail = new CYLReactionDetail();
+            if (!link.attr("href").toString().contains("index"))
+            {
+                detail.setTypeNum(CYLReactionDetail.IS_FOR_HIGH_LIGHT);
+                detail.setHighLightYearUrl(p);
+                detail.setUrlPath(p.substring(0,(p.lastIndexOf("/")+1)) + link.attr("href").toString());
+                detail.setName(link.getElementsByTag("a").text());
+
+                if (detail.getUrlPath().contains("shtm")) list.add(detail);
+            }
+
+        }
+
+        return list;
+    }
+
+
+
     /*获得全合成反应详情字符串*/
     public List<String> getDetailContentForTotalSynthesis(Context context, String urlPath) throws IOException
     {
@@ -349,4 +380,52 @@ public class CYLHtmlParse {
     }
 
 
+    /*获得化学工具网页的大类列表*/
+    public List<CYLChemTool> getChemToolList(Context context) throws IOException
+    {
+        List<CYLChemTool> list = new ArrayList<>();
+
+        String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get("http://www.organic-chemistry.org/info/chemistry/topics.shtm"));
+
+        Document doc = Jsoup.parse(htmlStr);
+
+        Elements links = doc.select("a[href]");
+
+        for (Element link : links)
+        {
+            CYLChemTool chemTool = new CYLChemTool();
+
+            if (link.attr("href").contains("shtm") && !link.getElementsByTag("a").text().contains("Links"))
+            {
+                chemTool.setTitle(link.getElementsByTag("a").text());
+                chemTool.setUrlPath("http://www.organic-chemistry.org/info/chemistry/"+link.attr("href"));
+                list.add(chemTool);
+            }
+
+        }
+
+        return list;
+    }
+
+    /*获得指定的化学大类的小类列表*/
+    public List<CYLChemTool> getSpecifiedChemToolList(Context context,String urlPath) throws  IOException
+    {
+        List<CYLChemTool> tools = new ArrayList<>();
+
+        String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(urlPath));
+
+        Document doc = Jsoup.parse(htmlStr);
+
+        Elements links =  doc.select("a[target]");
+
+        for (Element link : links)
+        {
+            CYLChemTool tool = new CYLChemTool();
+            tool.setTitle(link.getElementsByTag("a").text());
+            tool.setUrlPath(link.attr("href"));
+            tool.setBelongTo(urlPath.substring((urlPath.lastIndexOf("/") + 1),(urlPath.length() - 5)).toUpperCase());
+            tools.add(tool);
+        }
+        return tools;
+    }
 }

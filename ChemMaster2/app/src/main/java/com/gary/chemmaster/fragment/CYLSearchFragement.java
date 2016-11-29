@@ -18,8 +18,10 @@ import com.gary.chemmaster.CallBack.CYLshowListCallBack;
 import com.gary.chemmaster.R;
 import com.gary.chemmaster.activity.ShowPicListActivity;
 import com.gary.chemmaster.app.CYLChemApplication;
+import com.gary.chemmaster.entity.CYLChemTool;
 import com.gary.chemmaster.entity.CYLReactionDetail;
 import com.gary.chemmaster.model.CYLHttpManager;
+import com.gary.chemmaster.ui.CYLLoadingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +75,6 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
         switch (v.getId())
         {
             case R.id.ShowNameReactionBtn:
-
                  /*跳转界面*/
                 Intent intent = new Intent(getContext(), ShowPicListActivity.class);
                 startActivity(intent);
@@ -102,9 +103,11 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.ShowTotalSynthesis:
+
                 /*跳转界面*/
-                Intent Tintent = new Intent(getContext(), ShowPicListActivity.class);
+                final Intent Tintent = new Intent(getContext(), ShowPicListActivity.class);
                 startActivity(Tintent);
+
 
                 CYLHttpManager.setListOfReactionDetail(getContext(), MouleFlag.moduleTotalSynthesis, new CYLshowListCallBack<CYLReactionDetail>() {
 
@@ -127,6 +130,7 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.ShowHightLightBtn:
+
                 /*跳转界面*/
                 Intent Hintent = new Intent(getContext(), ShowPicListActivity.class);
                 startActivity(Hintent);
@@ -151,6 +155,28 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.showToolsBtn:
+                Intent Toolintent = new Intent(getContext(),ShowPicListActivity.class);
+                startActivity(Toolintent);
+
+                CYLHttpManager.setListOfChemTool(getContext(), new CYLshowListCallBack<CYLChemTool>() {
+                    @Override
+                    public void goToShowList(List<CYLChemTool> list) {
+
+                        /*发送广播*/
+                        Intent broadCast = new Intent(CYLChemApplication.ACTION_PREPARE_TO_SHOW_CHEMTOOL);
+                        broadCast.putParcelableArrayListExtra("info",new ArrayList<CYLChemTool>(list));
+                        getContext().sendBroadcast(broadCast);
+
+                    }
+
+                    /*ignore*/
+                    @Override
+                    public void showDetailContent(List<String> content) {
+
+                    }
+                });
+
+
                 break;
         }
 

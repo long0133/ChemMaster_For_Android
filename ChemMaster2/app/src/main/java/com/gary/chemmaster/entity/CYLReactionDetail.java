@@ -8,6 +8,7 @@ import android.os.Parcelable;
 import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.Dao.CYLNameReactionDao;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -142,5 +143,20 @@ public class CYLReactionDetail implements Parcelable {
 
     public String getUrlPath() {
         return UrlPath;
+    }
+
+    @Override
+    public String toString() {
+        return "CYLReactionDetail{" +
+                "Picture=" + Arrays.toString(Picture) +
+                ", Desc='" + Desc + '\'' +
+                ", UrlPath='" + UrlPath + '\'' +
+                ", name='" + name + '\'' +
+                ", HighLightYearUrl='" + HighLightYearUrl + '\'' +
+                ", year='" + year + '\'' +
+                ", month='" + month + '\'' +
+                ", author='" + author + '\'' +
+                ", typeNum=" + typeNum +
+                '}';
     }
 }

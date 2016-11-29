@@ -41,7 +41,7 @@ public class CYLHighLightAdapter extends BaseAdapter {
         }
 
         String year = data.get(position).getHighLightYearUrl();
-        String yearTitle = "Total Synthesis Of Year " + year.substring(year.indexOf("2"),year.lastIndexOf("/"));
+        String yearTitle = "HighLights Of Year " + year.substring(year.indexOf("2"),year.lastIndexOf("/"));
 
         TextView tv = (TextView)convertView.findViewById(R.id.highLightYearTV);
         tv.setText(yearTitle);

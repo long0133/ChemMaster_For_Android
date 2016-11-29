@@ -32,14 +32,17 @@ import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.CallBack.CYLshowListCallBack;
 import com.gary.chemmaster.CallBack.CommonCallBack;
 import com.gary.chemmaster.R;
+import com.gary.chemmaster.adapter.CYLChemToolAdapter;
 import com.gary.chemmaster.adapter.CYLDetailListAdapter;
 import com.gary.chemmaster.adapter.CYLHighLightAdapter;
 import com.gary.chemmaster.adapter.CYLTotalSynAdapter;
 import com.gary.chemmaster.adapter.CYLTotalSynAlertAdapter;
 import com.gary.chemmaster.app.CYLChemApplication;
+import com.gary.chemmaster.entity.CYLChemTool;
 import com.gary.chemmaster.entity.CYLPicEntity;
 import com.gary.chemmaster.entity.CYLReactionDetail;
 import com.gary.chemmaster.model.CYLHttpManager;
+import com.gary.chemmaster.ui.CYLLoadingDialog;
 import com.gary.chemmaster.ui.CYLShowDetailDialog;
 import com.gary.chemmaster.util.CYLHttpUtils;
 import com.gary.chemmaster.util.ImgaeLoader;
@@ -66,6 +69,7 @@ public class ShowPicListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_pic_list);
 
         Log.d("cyl","进入显示界面");
+        CYLLoadingDialog.showLoading(this);
         setUpBroadCastReceiver();
 
         initView();
@@ -84,6 +88,9 @@ public class ShowPicListActivity extends AppCompatActivity {
     {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
+            /*显示加载动画*/
+            CYLLoadingDialog.showLoading(ShowPicListActivity.this);
 
             CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(),MouleFlag.moduleNameReaction, new CYLshowListCallBack<String>() {
 
@@ -111,6 +118,7 @@ public class ShowPicListActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+            parent.setEnabled(false);
             TextView title = (TextView)view.findViewById(R.id.detailTitle);
 
             /*从集合中获取显示的数据*/
@@ -131,12 +139,17 @@ public class ShowPicListActivity extends AppCompatActivity {
             /*单击后跳出alertview显示具体全合成名称*/
             final CYLShowDetailDialog detailDialog = new CYLShowDetailDialog(ShowPicListActivity.this, subData);
             detailDialog.show();
+            parent.setEnabled(true);
 
             /*设置alertview的list的监听器，点击显示详细界面*/
             detailDialog.setListItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     ArrayList<CYLReactionDetail> data = detailDialog.getData();
+
+                    //隐藏dialog 显示loading动画
+                    detailDialog.dismiss();
+                    CYLLoadingDialog.showLoading(ShowPicListActivity.this);
 
                     CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(), MouleFlag.moduleTotalSynthesis, new CYLshowListCallBack<String>() {
 
@@ -150,7 +163,6 @@ public class ShowPicListActivity extends AppCompatActivity {
                         public void showDetailContent(List<String> content) {
 
                             showViewOfContent(content);
-                            detailDialog.dismiss();
 
                         }
                     });
@@ -165,8 +177,9 @@ public class ShowPicListActivity extends AppCompatActivity {
     private class InnerHighLightOnItemClickListener implements AdapterView.OnItemClickListener
     {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        public void onItemClick(final AdapterView<?> parent, View view, int position, long id) {
 
+            parent.setEnabled(false);
             selecedYearUrl = data.get(position).getHighLightYearUrl();
 
             CYLHttpManager.setListOfReactionDetail(ShowPicListActivity.this, MouleFlag.moduleHighLightOfYear, new CYLshowListCallBack<CYLReactionDetail>() {
@@ -178,12 +191,17 @@ public class ShowPicListActivity extends AppCompatActivity {
                     ArrayList<CYLReactionDetail> arrList = new ArrayList<CYLReactionDetail>(list);
                     final CYLShowDetailDialog dialog = new CYLShowDetailDialog(ShowPicListActivity.this,arrList);
                     dialog.show();
+                    parent.setEnabled(true);
 
                     /*点击显示某一高亮文章的详情*/
                     dialog.setListItemClickListener(new AdapterView.OnItemClickListener() {
 
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                            /*撤销dialog 显示加载动画*/
+                            dialog.dismiss();
+                            CYLLoadingDialog.showLoading(ShowPicListActivity.this);
 
                             List<CYLReactionDetail> data = dialog.getData();
                             CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(), MouleFlag.moduleHighLightOfYear, new CYLshowListCallBack<String>() {
@@ -195,12 +213,10 @@ public class ShowPicListActivity extends AppCompatActivity {
                                 @Override
                                 public void showDetailContent(List<String> content) {
 
-                                    showViewOfContent(content);
-                                    dialog.dismiss();
 
+                                    showViewOfContent(content);
                                 }
                             });
-
                         }
                     });
                 }
@@ -208,8 +224,56 @@ public class ShowPicListActivity extends AppCompatActivity {
                 @Override
                 public void showDetailContent(List<String> content) {
 
+
                 }
             });
+
+
+        }
+    }
+
+    /*化学工具的监听器*/
+    private class InnerChemToolOnItemClickListener implements AdapterView.OnItemClickListener
+    {
+        List<CYLChemTool> tools;
+
+        public InnerChemToolOnItemClickListener(List<CYLChemTool> tools) {
+            this.tools = tools;
+        }
+
+        @Override
+        public void onItemClick(final AdapterView<?> parent, View view, int position, long id) {
+
+            parent.setEnabled(false);
+            CYLHttpManager.setSpecifiedChemTool(ShowPicListActivity.this,
+                    tools.get(position).getUrlPath(), new CYLshowListCallBack<CYLChemTool>() {
+
+                        @Override
+                        public void goToShowList(List<CYLChemTool> list) {
+
+                        final CYLShowDetailDialog dialog = new CYLShowDetailDialog(ShowPicListActivity.this,new ArrayList<CYLChemTool>(list),0);
+                        dialog.show();
+                        parent.setEnabled(true);
+
+                            /*设置dialogList的点击监听器*/
+                        dialog.setListItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                                String urlToWeb = dialog.getTools().get(position).getUrlPath();
+                                Log.d("cyl",urlToWeb);
+                                // TODO: 16/11/28 网页转换
+
+                            }
+                        });
+                        }
+
+                        /*ignore*/
+                        @Override
+                        public void showDetailContent(List<String> content) {
+
+                        }
+                    });
 
 
         }
@@ -221,6 +285,10 @@ public class ShowPicListActivity extends AppCompatActivity {
         if (detailScroll.getVisibility() == View.VISIBLE)
         {
             detailScroll.setVisibility(View.INVISIBLE);
+            if (newestAction.equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT))
+            {
+                finish();
+            }
         }
         else
         {
@@ -232,6 +300,8 @@ public class ShowPicListActivity extends AppCompatActivity {
     /*根据传入的字符串内容显示界面*/
     private void showViewOfContent(List<String> content)
     {
+
+        CYLLoadingDialog.loadingDismiss();
            /*显示详情页面*/
         detailScroll.setVisibility(View.VISIBLE);
         detailLL.removeAllViews();
@@ -320,24 +390,27 @@ public class ShowPicListActivity extends AppCompatActivity {
         filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST);
         filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS);
         filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_HIGHTLIGHT);
+        filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_CHEMTOOL);
+        filter.addAction(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT);
         registerReceiver(receiver,filter);
     }
 
 
-
+private String newestAction;
     /*接受广播*/
     class innerBroadCastReceiver extends BroadcastReceiver
     {
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            newestAction = intent.getAction();
             data = intent.getParcelableArrayListExtra("info");
+            CYLLoadingDialog.loadingDismiss();
 
             /*接受广播显示传过来的数据*/
             if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST))
             {
                 /*人名反应*/
-
                 adapter = new CYLDetailListAdapter(ShowPicListActivity.this, data);
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener(new InnerReactiongListOnItemClickListener());
@@ -345,7 +418,6 @@ public class ShowPicListActivity extends AppCompatActivity {
             else if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS))
             {
                 /*全合成*/
-
                 ArrayList<String> alphabs = new ArrayList<>();
 
                 /*获得全合成list标题*/
@@ -376,6 +448,17 @@ public class ShowPicListActivity extends AppCompatActivity {
                 /*获得高亮文章的year 与其url*/
                 listView.setAdapter(new CYLHighLightAdapter(ShowPicListActivity.this,data));
                 listView.setOnItemClickListener(new InnerHighLightOnItemClickListener());
+            }
+            else if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_CHEMTOOL))
+            {
+                ArrayList<CYLChemTool> tools = intent.getParcelableArrayListExtra("info");
+                listView.setAdapter(new CYLChemToolAdapter(ShowPicListActivity.this,tools));
+                listView.setOnItemClickListener(new InnerChemToolOnItemClickListener(tools));
+            }
+            else if(intent.getAction().equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT))
+            {
+                ArrayList<String> content = intent.getStringArrayListExtra("content");
+                showViewOfContent(content);
             }
 
         }

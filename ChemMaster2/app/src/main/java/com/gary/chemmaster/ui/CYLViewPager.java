@@ -35,12 +35,35 @@ public class CYLViewPager extends ViewPager {
     }
 
 
+    private float xDistance, yDistance, xLast, yLast;
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent arg0) {
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
         // TODO Auto-generated method stub
         //当拦截触摸事件到达此位置的时候，返回true，
         //说明将onTouch拦截在此控件，进而执行此控件的onTouchEvent
-        return true;
+
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                xDistance = yDistance = 0f;
+                xLast = ev.getX();
+                yLast = ev.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                final float curX = ev.getX();
+                final float curY = ev.getY();
+
+                xDistance += Math.abs(curX - xLast);
+                yDistance += Math.abs(curY - yLast);
+                xLast = curX;
+                yLast = curY;
+
+                if (xDistance > yDistance) {
+                    return true;   //水平滑动时拦截事件
+                }
+                else return false;
+        }
+
+        return super.onInterceptTouchEvent(ev);
     }
 
     @Override

@@ -35,6 +35,9 @@ public class CYLChemApplication extends Application {
     public static String ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS= "ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS";
     /*设置显示高亮文章*/
     public static String ACTION_PREPARE_TO_SHOW_HIGHTLIGHT= "ACTION_PREPARE_TO_SHOW_HIGHLIGHT";
+    public static String ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT= "ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT";
+    /*设置显示化学常用网址*/
+    public static String ACTION_PREPARE_TO_SHOW_CHEMTOOL= "ACTION_PREPARE_TO_SHOW_CHEMTOOL";
 
     public static CYLPreference preference;
 
