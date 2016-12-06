@@ -5,6 +5,18 @@
     android:layout_height="match_parent"
     tools:context=".activity.ShowPicListActivity">
 
+    <TextView
+        android:id="@+id/searchTitle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorHoneyDew"
+        android:gravity="center"
+        />
+
     <LinearLayout
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
@@ -25,13 +37,14 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="7"
-            android:id="@+id/nameListSearchBtn"
+            android:id="@+id/nameListSearcEt"
             android:layout_marginRight="10dp"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1"
+            android:id="@+id/searchByAlphaB"
             android:background="@mipmap/search42"/>
 
     </LinearLayout>

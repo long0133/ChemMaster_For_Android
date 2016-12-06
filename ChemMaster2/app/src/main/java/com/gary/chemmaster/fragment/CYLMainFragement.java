@@ -1,6 +1,7 @@
 package com.gary.chemmaster.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -13,9 +14,13 @@ import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
@@ -27,6 +32,7 @@ import com.gary.chemmaster.CallBack.CYLEditorChoiceCallBack;
 import com.gary.chemmaster.CallBack.CYLRecentCallBack;
 import com.gary.chemmaster.CallBack.CommonCallBack;
 import com.gary.chemmaster.R;
+import com.gary.chemmaster.activity.WebViewActivity;
 import com.gary.chemmaster.adapter.CYLBrifViewPagerAdapter;
 import com.gary.chemmaster.entity.CYLEditor;
 import com.gary.chemmaster.entity.CYLPicEntity;
@@ -53,6 +59,8 @@ public class CYLMainFragement extends Fragment {
     private LinearLayout detailLL;
     private ScrollView detailScrollV;
     private ImgaeLoader imageLoader;
+
+    private WebView webView;
 
     RadioGroup indicator;
 
@@ -105,6 +113,7 @@ public class CYLMainFragement extends Fragment {
         detailScrollV = (ScrollView) view.findViewById(R.id.detailScrollVForMain);
 
         imageLoader = new ImgaeLoader(getContext());
+        webView = new WebView(getContext());
 
         detailScrollV.setVisibility(View.INVISIBLE);
 
@@ -177,6 +186,7 @@ public class CYLMainFragement extends Fragment {
             LinearLayout rl = (LinearLayout) inflater.inflate(R.layout.layout_editor_choice, null);
             final ImageView imageView = (ImageView) rl.findViewById(R.id.EC_image);
             TextView abs = (TextView) rl.findViewById(R.id.EC_abstract);
+            rl.setTag("http://pubs.acs.org/doi/full/"+RecentList.get(i).getDoi());
 
             /*加载图片*/
             String picPath = RecentList.get(i).getPicPath();
@@ -211,6 +221,9 @@ public class CYLMainFragement extends Fragment {
         }
     }
 
+
+
+
     /*编辑推荐pager的adapter*/
     class InnerEditorPagerAdapter extends PagerAdapter
     {
@@ -224,7 +237,22 @@ public class CYLMainFragement extends Fragment {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
 
-            LinearLayout imageView = imageViews.get(position);
+            final LinearLayout imageView = imageViews.get(position);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    // TODO: 16/11/30
+                    /*跳转去显示网页界面*/
+                    String url = (String) imageView.getTag();
+                    Intent intent = new Intent(getContext(), WebViewActivity.class);
+                    intent.putExtra("url",url);
+                    startActivity(intent);
+
+
+                }
+            });
+
             container.addView(imageView);
             return imageView;
 

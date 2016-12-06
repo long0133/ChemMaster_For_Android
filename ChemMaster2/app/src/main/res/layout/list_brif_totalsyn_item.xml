@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    >
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="text"
+        android:gravity="center_vertical"
+        android:id="@+id/brif_TotalSyn_nametextV"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/brif_TotalSyn_nametextV"
+        android:layout_below="@+id/brif_TotalSyn_nametextV"
+        android:text="author"
+        android:padding="5dp"
+        android:id="@+id/brif_TotalSyn_authortextV"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/brif_TotalSyn_nametextV"
+        android:layout_below="@+id/brif_TotalSyn_nametextV"
+        android:text="year"
+        android:layout_marginRight="20dp"
+        android:padding="5dp"
+        android:id="@+id/brif_TotalSyn_yeartextV"/>
+
+
+</RelativeLayout>

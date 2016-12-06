@@ -16,6 +16,7 @@ import com.gary.chemmaster.fragment.CYLDrawFragement;
 import com.gary.chemmaster.fragment.CYLMainFragement;
 import com.gary.chemmaster.fragment.CYLMineFragement;
 import com.gary.chemmaster.fragment.CYLSearchFragement;
+import com.gary.chemmaster.ui.CYLMainViewPager;
 
 import java.util.LinkedList;
 
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     RadioButton drawBtn;
     RadioButton mineBtn;
 
-    ViewPager pager;
+    CYLMainViewPager pager;
     CYLPagerAdapter adapter;
 
     CYLMainFragement mainFragement;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         searchBtn = (RadioButton)findViewById(R.id.SearchRB);
         drawBtn = (RadioButton)findViewById(R.id.DrawRB);
         mineBtn = (RadioButton)findViewById(R.id.MineRB);
-        pager = (ViewPager)findViewById(R.id.Viewpager);
+        pager = (CYLMainViewPager)findViewById(R.id.Viewpager);
 
         mainBtn.setChecked(true);
     }

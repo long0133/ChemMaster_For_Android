@@ -21,6 +21,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.ToDoubleBiFunction;
 
 /**
@@ -43,8 +44,13 @@ public class CYLHtmlParse {
 
         if (flag.equals(MouleFlag.moduleNameReaction))
         {
-            /*人名反应*/
-            list = getNameReactionList(list);
+            list = CYLChemApplication.nameReactionDao.getAllNameReaction();
+
+            if (list.isEmpty())
+            {
+                /*人名反应*/
+                list = getNameReactionList(list);
+            }
         }
         else if (flag.equals(MouleFlag.moduleTotalSynthesis))
         {
@@ -80,6 +86,7 @@ public class CYLHtmlParse {
 
         for (char alphaB = 'a'; alphaB <= 'z'; alphaB++)
         {
+            Log.d("cyl","加载"+alphaB);
             String path = "http://www.organic-chemistry.org/totalsynthesis/navi/"+alphaB+".shtm";
             String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(path));
 
@@ -131,6 +138,77 @@ public class CYLHtmlParse {
         return list;
     }
 
+    /*获取带某个字母的10个全合成list*/
+    public List<CYLReactionDetail> getRandomTotalSynthesisListOfAlphaBet(List<CYLReactionDetail> list,char alphaB) throws IOException
+    {
+
+        list = CYLChemApplication.totalSynDao.getAllTotalSynReaction();
+
+        if (list.isEmpty())
+        {
+            getTotalSynthesisList(list);
+        }
+
+        String path = "http://www.organic-chemistry.org/totalsynthesis/navi/"+alphaB+".shtm";
+        String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(path));
+
+        Document doc = Jsoup.parse(htmlStr);
+        Elements links = doc.select("tr");
+        for (int i = 0; i < links.size(); i++)
+        {
+            if (i == 0) continue;
+
+            Element link = links.get(i);
+
+            CYLReactionDetail detail = new CYLReactionDetail();
+            detail.setTypeNum(CYLReactionDetail.IS_FOR_TOTAL_SYN);
+
+                /*获取相关内容的url*/
+            String urlPath = link.child(0).getElementsByTag("a").attr("href").toString();
+
+            urlPath = urlPath.replace("../","");
+
+            if (!urlPath.contains("Highlights"))
+            {
+                urlPath = "http://www.organic-chemistry.org/totalsynthesis/"+urlPath;
+            }
+            else
+            {
+                urlPath = "http://www.organic-chemistry.org/"+urlPath;
+            }
+
+            detail.setUrlPath(urlPath);
+
+                /*获得title*/
+            String title = link.child(0).getElementsByTag("a").text();
+            detail.setName(title);
+                /*获得year*/
+            String year = link.child(1).getElementsByTag("td").text();
+            detail.setYear(year);
+
+                /*获得作者名*/
+            String author = link.child(2).getElementsByTag("td").text();
+            detail.setAuthor(author);
+
+            CYLChemApplication.totalSynDao.insertNameReaction(detail);
+
+            list.add(detail);
+        }
+
+        /*获得随机起始数*/
+        Random rd = new Random();
+        int begainIndex = rd.nextInt(list.size());
+        int endIndex = begainIndex + 10;
+
+        while (endIndex >= list.size())
+        {
+            begainIndex = rd.nextInt(list.size());
+            endIndex = begainIndex + 10;
+        }
+
+        return list.subList(begainIndex,endIndex);
+    }
+
 
     /*获得人名反应list*/
     public List<CYLReactionDetail> getNameReactionList(List<CYLReactionDetail> list) throws IOException
@@ -162,15 +240,15 @@ public class CYLHtmlParse {
 
                 //TODO
                 /*设置图片*/
-                nameReaction.setPicture(new byte[0]);
+//                nameReaction.setPicture(new byte[0]);
                 /*设置desc*/
-                nameReaction.setDesc("");
+//                nameReaction.setDesc("");
 
                 list.add(nameReaction);
 
                 /*当有图片数据和描述数据时才存入 数据库存入数据库*/
-                if (nameReaction.getPicture().length != 0 && nameReaction.getDesc().length() != 0)
-                {
+//                if (nameReaction.getPicture().length != 0 && nameReaction.getDesc().length() != 0)
+//                {
                     CYLReactionDetail reaction = CYLChemApplication.nameReactionDao.getNameReaction("name=?",new String[]{nameReaction.getName()});
 
                     if (reaction == null)
@@ -179,10 +257,8 @@ public class CYLHtmlParse {
                         Log.d("cyl","添加新内容入数据库 :" + nameReaction.getName());
                         CYLChemApplication.nameReactionDao.insertNameReaction(nameReaction);
                     }
-                }
-
+//                }
             }
-
         }
 
         Log.d("cyl","人名反应 ："+list.size()+"个");

@@ -40,19 +40,17 @@ public class CYLNameReactionDao {
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.query(nameReactionTable,new String[]{"id",
-                                                                 "desc",
                                                                  "name ",
-                                                                 "urlpath" ,
-                                                                 "bitmap"},null,null,null,null,null);
+                                                                 "urlpath" },null,null,null,null,null);
 
         while (cursor.moveToNext())
         {
             CYLReactionDetail reaction = new CYLReactionDetail();
 
-            reaction.setDesc(cursor.getString(1));
-            reaction.setName(cursor.getString(2));
-            reaction.setUrlPath(cursor.getString(3));
-            reaction.setPicture(cursor.getBlob(4));
+//            reaction.setDesc(cursor.getString(1));
+            reaction.setName(cursor.getString(1));
+            reaction.setUrlPath(cursor.getString(2));
+//            reaction.setPicture(cursor.getBlob(4));
 
             list.add(reaction);
         }
@@ -70,19 +68,18 @@ public class CYLNameReactionDao {
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.query(nameReactionTable,new String[]{"id",
-                "desc",
                 "name",
-                "urlpath",
-                "bitmap"},selection,selectionArgs,null,null,null);
+                "urlpath",},selection,selectionArgs,null,null,null);
 
-        CYLReactionDetail reaction = null;
+
+        CYLReactionDetail reaction = new CYLReactionDetail();
 
         while (cursor.moveToNext())
         {
-            reaction.setDesc(cursor.getString(1));
-            reaction.setName(cursor.getString(2));
-            reaction.setUrlPath(cursor.getString(3));
-            reaction.setPicture(cursor.getBlob(4));
+//            reaction.setDesc(cursor.getString(1));
+            reaction.setName(cursor.getString(1));
+            reaction.setUrlPath(cursor.getString(2));
+//            reaction.setPicture(cursor.getBlob(4));
 
         }
 
@@ -98,10 +95,10 @@ public class CYLNameReactionDao {
         SQLiteDatabase db = helper.getReadableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put("desc",reaction.getDesc());
+//        values.put("desc",reaction.getDesc());
         values.put("name", reaction.getName());
         values.put("urlpath", reaction.getUrlPath());
-        values.put("bitmap", reaction.getPicture());
+//        values.put("bitmap", reaction.getPicture());
 
         return db.insert(nameReactionTable,null, values);
     }

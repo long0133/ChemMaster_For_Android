@@ -3,7 +3,10 @@ package com.gary.chemmaster.ui;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.text.BoringLayout;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.RadioButton;
 import com.gary.chemmaster.R;
 
@@ -39,7 +42,11 @@ public class CYLRadioBtn extends RadioButton {
         super.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom);
         if(top != null){
             //这里只要改后面两个参数就好了，一个宽一个是高，如果想知道为什么可以查找源码
-            top.setBounds(0,0,130,130);
+            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+            Log.d("cyl", metrics.xdpi+"~~"+metrics.ydpi+"~~"+metrics.widthPixels+"~~~"+metrics.heightPixels);
+            double scale = (130 * 1.0 )/ 560;
+            top.setBounds(0,0,(int)(metrics.xdpi*scale),(int)(metrics.ydpi*scale));
+            Log.d("cyl",scale+"~~!");
         }
         setCompoundDrawables(left,top,right,bottom);
     }

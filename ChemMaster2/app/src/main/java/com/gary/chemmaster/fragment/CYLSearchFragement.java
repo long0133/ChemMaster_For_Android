@@ -17,6 +17,7 @@ import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.CallBack.CYLshowListCallBack;
 import com.gary.chemmaster.R;
 import com.gary.chemmaster.activity.ShowPicListActivity;
+import com.gary.chemmaster.activity.WebViewActivity;
 import com.gary.chemmaster.app.CYLChemApplication;
 import com.gary.chemmaster.entity.CYLChemTool;
 import com.gary.chemmaster.entity.CYLReactionDetail;
@@ -62,13 +63,21 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
         showHighLBtn = (Button)view.findViewById(R.id.ShowHightLightBtn);
         showChemRBtn = (Button)view.findViewById(R.id.showToolsBtn);
 
+        /*根据屏幕尺寸设置按钮位置*/
+         ViewGroup.LayoutParams nameLp = showNameRBtn.getLayoutParams();
+        ViewGroup.LayoutParams totalLp = showTotalSBtn.getLayoutParams();
+        ViewGroup.LayoutParams highLp = showHighLBtn.getLayoutParams();
+        ViewGroup.LayoutParams chemLp = showChemRBtn.getLayoutParams();
+
         showNameRBtn.setOnClickListener(this);
         showTotalSBtn.setOnClickListener(this);
         showHighLBtn.setOnClickListener(this);
         showChemRBtn.setOnClickListener(this);
+        searchBtn.setOnClickListener(this);
     }
 
-    /*相应按钮的点击*/
+    /*查询化合物的按钮点击*/
+    /*相应四个模块按钮的点击*/
     @Override
     public void onClick(View v) {
 
@@ -175,7 +184,18 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
 
                     }
                 });
+                break;
 
+            case R.id.searchBtn:
+                String et = et_compound.getText().toString();
+                if (et.length() == 0){
+                    return;
+                }
+                String searchUrl = "http://chanpin.molbase.cn/search/?search_keyword="+et;
+
+                Intent intent1 = new Intent(getContext(), WebViewActivity.class);
+                intent1.putExtra("url",searchUrl);
+                startActivity(intent1);
 
                 break;
         }

@@ -68,10 +68,8 @@ public class CYLDBOpenHelper extends SQLiteOpenHelper {
 
                 sql = "CREATE TABLE IF NOT EXISTS "+   NAME_REACTION_LIST_TABLE +"("+
                         "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "desc VARCHAR(500)," +
                         "name VARCHAR(50)," +
-                        "urlpath VARCHAR(100)," +
-                        "bitmap BLOB)";
+                        "urlpath VARCHAR(100))";
 
                 Log.d("cyl",NAME_REACTION_LIST_TABLE);
 

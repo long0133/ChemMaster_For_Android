@@ -3,12 +3,93 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:layout_width="wrap_content"
+    <RadioGroup
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="120dp" />
+        android:orientation="horizontal"
+        android:id="@+id/drawRadioG"
+        >
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:text="单键"
+            android:id="@+id/single_bond"
+            android:gravity="center"
+            android:background="@drawable/selector_draw_radiobtn"
+            android:checked="true"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:text="双键"
+            android:id="@+id/double_bond"
+            android:gravity="center"
+            android:background="@drawable/selector_draw_radiobtn"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:text="三键"
+            android:id="@+id/triple_bond"
+            android:gravity="center"
+            android:background="@drawable/selector_draw_radiobtn"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:text="橡皮"
+            android:id="@+id/erase"
+            android:gravity="center"
+            android:background="@drawable/selector_draw_radiobtn"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:text="撤回"
+            android:id="@+id/undo"
+            android:gravity="center"
+            android:background="@drawable/selector_draw_radiobtn"
+            />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:text="清除"
+            android:id="@+id/clearAll"
+            android:gravity="center"
+            android:background="@drawable/selector_draw_radiobtn"
+            />
+
+    </RadioGroup>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/drawRadioG"
+        android:id="@+id/draw_RelativeL">
+
+        <com.gary.chemmaster.ui.CYLDrawView
+            android:id="@+id/drawView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+
 </RelativeLayout>

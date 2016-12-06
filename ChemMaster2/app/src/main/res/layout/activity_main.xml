@@ -60,12 +60,12 @@
             />
     </RadioGroup>
 
-    <android.support.v4.view.ViewPager
+    <com.gary.chemmaster.ui.CYLMainViewPager
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/Viewpager"
         android:layout_above="@+id/RadioGroup">
 
-    </android.support.v4.view.ViewPager>
+    </com.gary.chemmaster.ui.CYLMainViewPager>
 
 </RelativeLayout>

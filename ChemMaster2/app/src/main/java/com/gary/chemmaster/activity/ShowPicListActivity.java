@@ -10,16 +10,24 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -53,7 +61,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class ShowPicListActivity extends AppCompatActivity {
+public class ShowPicListActivity extends AppCompatActivity{
 
     private innerBroadCastReceiver receiver;
     private ListView listView;
@@ -62,6 +70,13 @@ public class ShowPicListActivity extends AppCompatActivity {
     private LinearLayout detailLL;
     private ScrollView detailScroll;
     private ImgaeLoader imageLoader;
+    private LinearLayout searchLL;
+    private TextView searchTitle;
+
+    private Button searchByAlphaB;
+    private EditText searchET;
+
+    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,17 +86,51 @@ public class ShowPicListActivity extends AppCompatActivity {
         Log.d("cyl","进入显示界面");
         CYLLoadingDialog.showLoading(this);
         setUpBroadCastReceiver();
-
         initView();
+
     }
 
      private void initView(){
          listView = (ListView)findViewById(R.id.ReactionDeatilLv);
          detailLL = (LinearLayout) findViewById(R.id.ScrollContentLL);
          detailScroll = (ScrollView) findViewById(R.id.detailScrollV);
+         searchLL = (LinearLayout) findViewById(R.id.searchLL);
+         searchTitle = (TextView) findViewById(R.id.searchTitle);
+         searchET = (EditText) findViewById(R.id.nameListSearcEt);
+
+         searchET.addTextChangedListener(new TextWatcher() {
+             @Override
+             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+             }
+
+             @Override
+             public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+             }
+
+             @Override
+             public void afterTextChanged(Editable s) {
+
+             }
+         });
+
+         searchByAlphaB = (Button) findViewById(R.id.searchByAlphaB);
+         searchByAlphaB.setVisibility(View.INVISIBLE);
+         searchTitle.setVisibility(View.INVISIBLE);
+         searchLL.setVisibility(View.INVISIBLE);
 
          imageLoader = new ImgaeLoader(this);
      }
+
+//    @Override
+//    public void onClick(View v) {
+//        switch (v.getId()){
+//            case R.id.searchByAlphaB:
+//
+//                break;
+//        }
+//    }
 
     /*人名反应点击监听器*/
     private class InnerReactiongListOnItemClickListener implements AdapterView.OnItemClickListener
@@ -263,6 +312,11 @@ public class ShowPicListActivity extends AppCompatActivity {
                                 String urlToWeb = dialog.getTools().get(position).getUrlPath();
                                 Log.d("cyl",urlToWeb);
                                 // TODO: 16/11/28 网页转换
+                                dialog.dismiss();
+
+                                Intent intent = new Intent(ShowPicListActivity.this,WebViewActivity.class);
+                                intent.putExtra("url",urlToWeb);
+                                startActivity(intent);
 
                             }
                         });
@@ -279,23 +333,6 @@ public class ShowPicListActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-
-        if (detailScroll.getVisibility() == View.VISIBLE)
-        {
-            detailScroll.setVisibility(View.INVISIBLE);
-            if (newestAction.equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT))
-            {
-                finish();
-            }
-        }
-        else
-        {
-            super.onBackPressed();
-        }
-
-    }
 
     /*根据传入的字符串内容显示界面*/
     private void showViewOfContent(List<String> content)
@@ -392,6 +429,8 @@ public class ShowPicListActivity extends AppCompatActivity {
         filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_HIGHTLIGHT);
         filter.addAction(CYLChemApplication.ACTION_PREPARE_TO_SHOW_CHEMTOOL);
         filter.addAction(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT);
+        filter.addAction(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_TOTAL_SYNTHESIS_WITH_CONTENT);
+        filter.addAction(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_NAME_REACTIONLIST_WITH_CONTENT);
         registerReceiver(receiver,filter);
     }
 
@@ -410,6 +449,7 @@ private String newestAction;
             /*接受广播显示传过来的数据*/
             if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_NAME_REACTIONLIST))
             {
+                searchLL.setVisibility(View.VISIBLE);
                 /*人名反应*/
                 adapter = new CYLDetailListAdapter(ShowPicListActivity.this, data);
                 listView.setAdapter(adapter);
@@ -417,6 +457,8 @@ private String newestAction;
             }
             else if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_TOTAL_SYNTHESIS))
             {
+                searchTitle.setText("Total Synthesis");
+                searchTitle.setVisibility(View.VISIBLE);
                 /*全合成*/
                 ArrayList<String> alphabs = new ArrayList<>();
 
@@ -444,6 +486,9 @@ private String newestAction;
             }
             else if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_HIGHTLIGHT))
             {
+                searchTitle.setText("HighLight");
+                searchTitle.setVisibility(View.VISIBLE);
+
                 /*高亮文章*/
                 /*获得高亮文章的year 与其url*/
                 listView.setAdapter(new CYLHighLightAdapter(ShowPicListActivity.this,data));
@@ -451,6 +496,9 @@ private String newestAction;
             }
             else if (intent.getAction().equals(CYLChemApplication.ACTION_PREPARE_TO_SHOW_CHEMTOOL))
             {
+                searchTitle.setText("Chemiscal Tools");
+                searchTitle.setVisibility(View.VISIBLE);
+
                 ArrayList<CYLChemTool> tools = intent.getParcelableArrayListExtra("info");
                 listView.setAdapter(new CYLChemToolAdapter(ShowPicListActivity.this,tools));
                 listView.setOnItemClickListener(new InnerChemToolOnItemClickListener(tools));
@@ -460,8 +508,39 @@ private String newestAction;
                 ArrayList<String> content = intent.getStringArrayListExtra("content");
                 showViewOfContent(content);
             }
+            else if(intent.getAction().equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_TOTAL_SYNTHESIS_WITH_CONTENT))
+            {
+                ArrayList<String> content = intent.getStringArrayListExtra("content");
+                showViewOfContent(content);
+            }
+            else if(intent.getAction().equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_NAME_REACTIONLIST_WITH_CONTENT))
+            {
+                ArrayList<String> content = intent.getStringArrayListExtra("content");
+                showViewOfContent(content);
+            }
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (detailScroll.getVisibility() == View.VISIBLE)
+        {
+            if (newestAction.equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT) ||
+                    newestAction.equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_TOTAL_SYNTHESIS_WITH_CONTENT)||
+                    newestAction.equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_NAME_REACTIONLIST_WITH_CONTENT))
+            {
+                finish();
+            }
+            detailScroll.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+
+        }
+
+        super.onBackPressed();
     }
 
     @Override
