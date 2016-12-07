@@ -20,6 +20,7 @@
             android:gravity="center"
             android:background="@drawable/selector_draw_radiobtn"
             android:checked="true"
+            android:padding="10dp"
             />
 
         <RadioButton
@@ -31,6 +32,7 @@
             android:id="@+id/double_bond"
             android:gravity="center"
             android:background="@drawable/selector_draw_radiobtn"
+            android:padding="10dp"
             />
 
         <RadioButton
@@ -42,6 +44,7 @@
             android:id="@+id/triple_bond"
             android:gravity="center"
             android:background="@drawable/selector_draw_radiobtn"
+            android:padding="10dp"
             />
 
         <RadioButton
@@ -53,6 +56,7 @@
             android:id="@+id/erase"
             android:gravity="center"
             android:background="@drawable/selector_draw_radiobtn"
+            android:padding="10dp"
             />
 
         <RadioButton
@@ -63,7 +67,8 @@
             android:text="撤回"
             android:id="@+id/undo"
             android:gravity="center"
-            android:background="@drawable/selector_draw_radiobtn"
+            android:background="@drawable/selector_draw_radiobtn_press"
+            android:padding="10dp"
             />
 
         <RadioButton
@@ -74,7 +79,8 @@
             android:text="清除"
             android:id="@+id/clearAll"
             android:gravity="center"
-            android:background="@drawable/selector_draw_radiobtn"
+            android:background="@drawable/selector_draw_radiobtn_press"
+            android:padding="10dp"
             />
 
     </RadioGroup>

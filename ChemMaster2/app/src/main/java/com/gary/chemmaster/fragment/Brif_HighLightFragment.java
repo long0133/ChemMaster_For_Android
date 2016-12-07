@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.TimeUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.CallBack.CYLshowListCallBack;
@@ -87,7 +89,13 @@ public class Brif_HighLightFragment extends Fragment {
             protected void onPostExecute(List<CYLReactionDetail> list) {
 
                 /*获的最新的高亮*/
-                datas = list.subList(list.size() - 10,list.size());
+                try {
+                    datas = list.subList(list.size() - 10,list.size());
+                }
+                catch (IndexOutOfBoundsException e)
+                {
+                    Toast.makeText(getContext(),"没有网络连接", Toast.LENGTH_LONG).show();
+                }
 
                 adapter = new InnerBrifHighLightAdapter();
                 highlight_lv.setAdapter(adapter);

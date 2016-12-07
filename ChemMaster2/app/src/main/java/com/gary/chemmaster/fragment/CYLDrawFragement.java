@@ -6,6 +6,7 @@ import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.BoolRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -31,6 +32,8 @@ public class CYLDrawFragement extends Fragment {
     public static final int MESSAGE_TOUCH_UP = 1;
     public static final int MESSAGE_APPROACH_POINT = 2;
     public static final int MESSAGE_DISAPPROACH_POINT = 3;
+    public static final int MESSAGE_UNDO = 4;
+    public static final int MESSAGE_CLEARAll = 5;
     RadioGroup toolsRg;
     CYLDrawView drawView;
     RelativeLayout rl;
@@ -59,6 +62,14 @@ public class CYLDrawFragement extends Fragment {
 
                 case MESSAGE_DISAPPROACH_POINT:
                     removeApproachIndicater();
+                    break;
+
+                case MESSAGE_UNDO:
+                    toolsRg.check(R.id.single_bond);
+                    break;
+
+                case MESSAGE_CLEARAll:
+                    toolsRg.check(R.id.single_bond);
                     break;
             }
 
@@ -110,7 +121,6 @@ public class CYLDrawFragement extends Fragment {
 
     private void showApporachIndicator(PointF point)
     {
-        Log.d("cyl","approach");
         rl.removeView(approachImageV);
 
         approachImageV.setX(point.x-30);
@@ -143,15 +153,19 @@ public class CYLDrawFragement extends Fragment {
                     break;
 
                 case R.id.triple_bond:
+                    drawView.setStatus(DrawStatus.Draw_TripleBond);
                     break;
 
                 case R.id.erase:
+                    drawView.setStatus(DrawStatus.Draw_Erease);
                     break;
 
                 case R.id.undo:
+                    drawView.undo();
                     break;
 
                 case R.id.clearAll:
+                    drawView.clearAll();
                     break;
             }
 

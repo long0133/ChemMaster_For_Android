@@ -66,11 +66,13 @@ public class JSONParse {
             isHistoryUpdated = true;
             CYLChemApplication.preference.saveData(HISTORY_UPDATE_PREFERENCES, 0l);
         }
-//        Log.i("cyl","差值： "+(System.currentTimeMillis() - lastUpadate));
+
+        Log.d("cyl","isHistoryUpdated:" + isHistoryUpdated);
+        Log.i("cyl","差值： "+(System.currentTimeMillis() - lastUpadate));
         /*若是跟新为首次更新或者3天前则更新*/
         if (System.currentTimeMillis() - lastUpadate >= ThreeDays)
         {
-            Log.i("cyl","进行更新 :" + lastUpadate);
+            Log.i("cyl",(System.currentTimeMillis() - lastUpadate)+" 进行更新 :" + lastUpadate);
 
             InputStream  is = CYLHttpUtils.get(CYLUrlFactory.getUrlOfAllEditorChoise());
             String jsonStr = CYLHttpUtils.getString(is);
@@ -176,6 +178,8 @@ public class JSONParse {
         }
         else
         {
+            /*数据库中取出最新推荐*/
+            Log.d("cyl","数据库中取出最新推荐");
             list = CYLChemApplication.editorChoiceDao.getRecentEditorChoice(null,null);
         }
 
