@@ -90,6 +90,8 @@ public class JSONParse {
                 CYLChemApplication.preference.saveData(IS_FIRST_Time_UPDATE_PREFERENCES, false);
             }
 
+            CYLChemApplication.preference.saveData(IS_HISTORY_UPDATE_PREFERENCES, true);
+            CYLChemApplication.preference.saveData(HISTORY_UPDATE_PREFERENCES, System.currentTimeMillis());
             CYLChemApplication.preference.saveData(JSON_LENGTH_PREFERENCES, jsonStr.length());
             jsonStr = strAftertreatment;
 
@@ -103,8 +105,6 @@ public class JSONParse {
                 list.add(pub);
             }
 
-            CYLChemApplication.preference.saveData(IS_HISTORY_UPDATE_PREFERENCES, true);
-            CYLChemApplication.preference.saveData(HISTORY_UPDATE_PREFERENCES, System.currentTimeMillis());
         }
         else
         {

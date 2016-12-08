@@ -139,10 +139,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         {
             case R.id.MainRB:
                 pager.setCurrentItem(0,true);
+                drawFragement.dismissPopWindow();
                 break;
 
             case R.id.SearchRB:
                 pager.setCurrentItem(1,true);
+                drawFragement.dismissPopWindow();
                 break;
 
             case R.id.DrawRB:
@@ -151,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
             case R.id.MineRB:
                 pager.setCurrentItem(3,true);
+                drawFragement.dismissPopWindow();
                 break;
         }
 

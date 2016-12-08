@@ -98,4 +98,20 @@
 
     </RelativeLayout>
 
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:background="@mipmap/arrowup"
+        android:layout_marginBottom="20dp"
+        android:id="@+id/showAtomToolsBtn"/>
+
+    <View
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/standardView"
+        android:layout_alignLeft="@+id/showAtomToolsBtn"
+        android:layout_alignTop="@+id/showAtomToolsBtn"/>
+
 </RelativeLayout>

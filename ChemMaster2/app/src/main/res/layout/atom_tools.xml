@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/atomToolRG"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/Nitrogen"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="N"
+            android:textColor="#1036ea"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_atom_btn"/>
+
+        <RadioButton
+            android:id="@+id/Hydrogen"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="H"
+            android:textColor="#10c7ea"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_atom_btn"/>
+
+        <RadioButton
+            android:id="@+id/Oxygen"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="O"
+            android:textColor="#ea1510"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_atom_btn"/>
+
+        <RadioButton
+            android:id="@+id/florine"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="F"
+            android:textColor="#5a4430"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_atom_btn"/>
+
+        <RadioButton
+            android:id="@+id/Chlore"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Cl"
+            android:textColor="#c1ef71"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_atom_btn"/>
+
+        <RadioButton
+            android:id="@+id/Bromine"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Br"
+            android:textColor="#eca836"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_atom_btn"/>
+
+        <RadioButton
+            android:id="@+id/Sulfer"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:text="S"
+            android:textColor="#eca036"
+            android:textStyle="bold"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/selector_atom_btn"/>
+
+    </RadioGroup>
+</LinearLayout>

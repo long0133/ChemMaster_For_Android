@@ -97,9 +97,12 @@ public class Brif_HighLightFragment extends Fragment {
                     Toast.makeText(getContext(),"没有网络连接", Toast.LENGTH_LONG).show();
                 }
 
-                adapter = new InnerBrifHighLightAdapter();
-                highlight_lv.setAdapter(adapter);
-                highlight_lv.setOnItemClickListener(new InnerBrifHighLightOnItemClickListener());
+                if (datas.size() != 0)
+                {
+                    adapter = new InnerBrifHighLightAdapter();
+                    highlight_lv.setAdapter(adapter);
+                    highlight_lv.setOnItemClickListener(new InnerBrifHighLightOnItemClickListener());
+                }
             }
         };
 

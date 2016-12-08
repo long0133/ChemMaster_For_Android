@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.RadioButton;
 
 import com.gary.chemmaster.CYLEnum.DrawStatus;
 import com.gary.chemmaster.entity.CYLChemBond;
@@ -22,6 +23,7 @@ import com.gary.chemmaster.fragment.CYLDrawFragement;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -30,8 +32,6 @@ import java.util.Set;
 public class CYLDrawView extends View {
 
     private Handler processHandler;
-    private String doThing;
-    private Canvas canvas;
     private Paint paint;
     private float curX;
     private float curY;
@@ -46,7 +46,7 @@ public class CYLDrawView extends View {
     /*辅助图的点的集合*/
     private ArrayList<PointF> assistancePoints;
     /*化学键，点的集合*/
-    private Set<PointF> points;
+    private ArrayList<PointF> points;
     /*显示当前正在绘制的线条*/
     private CYLSingleBong curBond;
     /*自动粘附的距离*/
@@ -55,12 +55,16 @@ public class CYLDrawView extends View {
     private float bondLength = 200;
     /*移除的键*/
     CYLChemBond erasedBond;
+    /*点击的原子*/
+    RadioButton selectAtom;
+    /*是否在添加原子*/
+    boolean isAttachAtom;
     ArrayList<CYLChemBond> operations;
 
     public CYLDrawView(Context context) {
         super(context);
         bonds = new ArrayList<>();
-        points = new HashSet<>();
+        setPoints(new ArrayList<PointF>());
         assistancePoints = new ArrayList<>();
         operations = new ArrayList<>();
         paint = new Paint();
@@ -72,7 +76,7 @@ public class CYLDrawView extends View {
     public CYLDrawView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         bonds = new ArrayList<>();
-        points = new HashSet<>();
+        setPoints(new ArrayList<PointF>());
         assistancePoints = new ArrayList<>();
         operations = new ArrayList<>();
         paint = new Paint();
@@ -84,7 +88,7 @@ public class CYLDrawView extends View {
     public CYLDrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
         bonds = new ArrayList<>();
-        points = new HashSet<>();
+        setPoints(new ArrayList<PointF>());
         assistancePoints = new ArrayList<>();
         operations = new ArrayList<>();
         paint = new Paint();
@@ -125,11 +129,7 @@ public class CYLDrawView extends View {
             {
                 canvas.drawLine(bond.startPoint.x,bond.startPoint.y,bond.endPoint.x,bond.endPoint.y,paint);
             }
-
-
         }
-
-
     }
 
     @Override
@@ -148,45 +148,86 @@ public class CYLDrawView extends View {
                 startY = Y;
                PointF downP = new PointF(X,Y);
 
-                if (status.equals(DrawStatus.Draw_SingleBond))
+                /*是否放置对应原子*/
+                if (isAttachAtom)
                 {
-                    drawSingleBond(downP,event);
+                    Class bondClass = CYLChemBond.class;
+                    int flag = 1;
+                    for (PointF point : points)
+                    {
+                        if (distanceFromTwoPoint(downP, point) <= bondLength/3)
+                        {
+                            for (CYLChemBond bond : bonds)
+                            {
+                                if (bond.startPoint.equals(point.x,point.y) || bond.endPoint.equals(point.x,point.y))
+                                {
+                                    /*单键单键*/
+                                    if (bond.getClass().equals(CYLSingleBong.class) && bondClass.equals(CYLSingleBong.class)) {bondClass = CYLDoubleBond.class; flag = 2;}
+                                  /*单键双键*/
+                                    if (bond.getClass().equals(CYLSingleBong.class) && bondClass.equals(CYLDoubleBond.class)) {bondClass = CYLTripleBond.class; flag = 3;}
+                                   /*单键*/
+                                    if (bond.getClass().equals(CYLSingleBong.class) && !bondClass.equals(CYLDoubleBond.class) && !bondClass.equals(CYLTripleBond.class)) {bondClass = CYLSingleBong.class; flag = 1;}
+                                    /*双键*/
+                                    if (bond.getClass().equals(CYLDoubleBond.class) && !bondClass.equals(CYLTripleBond.class)) {bondClass = CYLDoubleBond.class; flag = 2;}
+                                    /*三键*/
+                                    if (bond.getClass().equals(CYLTripleBond.class)) {bondClass = CYLTripleBond.class;flag = 3;}
+
+                                }
+                            }
+                            if (processHandler != null) Message.obtain(processHandler,CYLDrawFragement.MESSAGE_SHOW_ATOM,flag,flag,point).sendToTarget();
+                        }
+                    }
+
                 }
-                else if (status.equals(DrawStatus.Draw_DoubleBond))
+                else
                 {
-                    drawDoubleBond(downP);
-                }
-                else if (status.equals(DrawStatus.Draw_TripleBond))
-                {
-                    drawTripleBond(downP);
-                }
-                else if (status.equals(DrawStatus.Draw_Erease))
-                {
-                    eraseBond(downP);
+                    if (status.equals(DrawStatus.Draw_SingleBond))
+                    {
+                        drawSingleBond(downP,MotionEvent.ACTION_DOWN);
+                    }
+                    else if (status.equals(DrawStatus.Draw_DoubleBond))
+                    {
+                        drawDoubleBond(downP);
+                    }
+                    else if (status.equals(DrawStatus.Draw_TripleBond))
+                    {
+                        drawTripleBond(downP);
+                    }
+                    else if (status.equals(DrawStatus.Draw_Erease))
+                    {
+                        eraseBond(downP);
+                    }
+
                 }
 
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                curX = X;
-                curY = Y;
-                PointF curP = new PointF(curX,curY);
-
-                if (status.equals(DrawStatus.Draw_SingleBond))
+                if (!isAttachAtom)
                 {
-                    drawSingleBond(curP,event);
+                    curX = X;
+                    curY = Y;
+                    PointF curP = new PointF(curX,curY);
+
+                    if (status.equals(DrawStatus.Draw_SingleBond))
+                    {
+                        drawSingleBond(curP,MotionEvent.ACTION_MOVE);
+                    }
                 }
 
                 break;
 
             case MotionEvent.ACTION_UP:
-                endX = X;
-                endY = Y;
-                PointF endP = new PointF(endX,endY);
-
-                if (status.equals(DrawStatus.Draw_SingleBond))
+                if (!isAttachAtom)
                 {
-                    drawSingleBond(endP,event);
+                    endX = X;
+                    endY = Y;
+                    PointF endP = new PointF(endX,endY);
+
+                    if (status.equals(DrawStatus.Draw_SingleBond))
+                    {
+                        drawSingleBond(endP,MotionEvent.ACTION_UP);
+                    }
                 }
                 break;
         }
@@ -196,9 +237,9 @@ public class CYLDrawView extends View {
 
 
     /*绘制单键*/
-    private void drawSingleBond(PointF point, MotionEvent motionEvent)
+    private void drawSingleBond(PointF point, int EventAction)
     {
-        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN)
+        if (EventAction == MotionEvent.ACTION_DOWN)
         {
             for (PointF pointF : points)
             {
@@ -211,6 +252,7 @@ public class CYLDrawView extends View {
                 }
 
             }
+
                 /*告知界面去显示指示indicator*/
             if (processHandler != null)
                 Message.obtain(processHandler, CYLDrawFragement.MESSAGE_TOUCH_DOWN,point).sendToTarget();
@@ -218,13 +260,26 @@ public class CYLDrawView extends View {
                 /*显示辅助线条*/
             setAssistancePointsWithPoint();
         }
-        else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
+        else if (EventAction == MotionEvent.ACTION_MOVE)
         {
-
             curBond = new CYLSingleBong(new PointF(startX,startY),new PointF(curX,curY));
 
 
+            /*贴紧某一点时 显示indictor*/
             for (PointF pointF : points)
+            {
+                if (distanceFromTwoPoint(pointF, point) <= autoAttachLength)
+                {
+                    if (processHandler!=null) Message.obtain(processHandler,CYLDrawFragement.MESSAGE_APPROACH_POINT,pointF).sendToTarget();
+                    break;
+                }
+                else
+                {
+                    if (processHandler!=null) Message.obtain(processHandler,CYLDrawFragement.MESSAGE_DISAPPROACH_POINT).sendToTarget();
+                }
+            }
+
+            for (PointF pointF : assistancePoints)
             {
                 if (distanceFromTwoPoint(pointF, point) <= autoAttachLength)
                 {
@@ -239,7 +294,7 @@ public class CYLDrawView extends View {
 
             invalidate();
         }
-        else if (motionEvent.getAction() == MotionEvent.ACTION_UP)
+        else if (EventAction == MotionEvent.ACTION_UP)
         {
             if (status.equals(DrawStatus.Draw_SingleBond))
             {
@@ -255,12 +310,22 @@ public class CYLDrawView extends View {
                     }
                 }
 
+                for (PointF pointF : assistancePoints)
+                {
+                    if (distanceFromTwoPoint(pointF,point) <= autoAttachLength)
+                    {
+                        point = new PointF(pointF.x,pointF.y);
+                    }
+                }
                 removeAssistancePoint();
 
                 CYLSingleBong singleB = new CYLSingleBong(startP,point);
                 bonds.add(singleB);
 
+                if (!points.contains(startP))
                 points.add(startP);
+
+                if (!points.contains(point))
                 points.add(point);
 
                 invalidate();
@@ -300,7 +365,7 @@ public class CYLDrawView extends View {
                 float angle = (float) Math.atan((bond.endPoint.y - bond.startPoint.y)/(bond.endPoint.x
                  - bond.startPoint.x));
 
-                float distance = bondLength/5 * 2;
+                float distance = bondLength/4 * 1;
 
                 if (angle < 0)
                 {
@@ -498,6 +563,7 @@ public class CYLDrawView extends View {
     private boolean isFirstUndo;
     public void undo()
     {
+        /*防止点击一次造成两次undo*/
         if (isFirstUndo)
         {
             isFirstUndo = !isFirstUndo;
@@ -527,8 +593,9 @@ public class CYLDrawView extends View {
     public void clearAll()
     {
         bonds.clear();
+        points.clear();
         invalidate();
-        Message.obtain(processHandler,CYLDrawFragement.MESSAGE_UNDO).sendToTarget();
+        Message.obtain(processHandler,CYLDrawFragement.MESSAGE_CLEARAll).sendToTarget();
     }
 
     /*设置辅助线条的点*/
@@ -564,14 +631,13 @@ public class CYLDrawView extends View {
         float p6Y = startY - bondLength;
         PointF p6 = new PointF(p6X,p6Y);
         assistancePoints.add(p6);
-
-        points.addAll(assistancePoints);
     }
 
     /*移除辅助线条*/
     private void removeAssistancePoint()
     {
-        points.removeAll(assistancePoints);
+//        points.removeAll(assistancePoints);
+
         assistancePoints.clear();
     }
 
@@ -591,5 +657,20 @@ public class CYLDrawView extends View {
 
     public void setProcessHandler(Handler processHandler) {
         this.processHandler = processHandler;
+    }
+
+    public void setSelectAtom(RadioButton selectAtom) {
+        this.selectAtom = selectAtom;
+    }
+
+    public void setAttachAtom(boolean attachAtom) {
+        isAttachAtom = attachAtom;
+    }
+
+    public void setPoints(ArrayList<PointF> points) {
+        if (this.points == null)
+        {
+            this.points = points;
+        }
     }
 }
