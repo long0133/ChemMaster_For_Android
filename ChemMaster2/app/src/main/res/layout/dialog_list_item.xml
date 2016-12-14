@@ -30,4 +30,12 @@
         android:layout_alignBottom="@+id/dialog_item_year"
         android:layout_marginLeft="20dp"
         />
+
+    <View
+        android:layout_below="@+id/dialog_item_author"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/colorSub"
+
+        />
 </RelativeLayout>

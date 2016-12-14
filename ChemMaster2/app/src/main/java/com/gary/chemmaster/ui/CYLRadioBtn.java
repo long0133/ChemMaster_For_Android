@@ -43,10 +43,10 @@ public class CYLRadioBtn extends RadioButton {
         if(top != null){
             //这里只要改后面两个参数就好了，一个宽一个是高，如果想知道为什么可以查找源码
             DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-            Log.d("cyl", metrics.xdpi+"~~"+metrics.ydpi+"~~"+metrics.widthPixels+"~~~"+metrics.heightPixels);
-            double scale = (130 * 1.0 )/ 560;
-            top.setBounds(0,0,(int)(metrics.xdpi*scale),(int)(metrics.ydpi*scale));
-            Log.d("cyl",scale+"~~!");
+//            Log.d("cyl", metrics.xdpi+"~~"+metrics.ydpi+"~~"+metrics.widthPixels+"~~~"+metrics.heightPixels);
+            double scale = (130 * 1.0 )/ 600;
+            top.setBounds(0,5,(int)(metrics.xdpi*scale),(int)(metrics.ydpi*scale));
+//            Log.d("cyl",scale+"~~!");
         }
         setCompoundDrawables(left,top,right,bottom);
     }

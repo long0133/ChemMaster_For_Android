@@ -90,9 +90,12 @@ public class CYLDrawFragement extends Fragment {
 
                 case MESSAGE_CLEARAll:
                     toolsRg.check(R.id.single_bond);
-                    for (TextView tv : atoms)
+                    if (atoms != null && atoms.size() > 0)
                     {
-                        rl.removeView(tv);
+                        for (TextView tv : atoms)
+                        {
+                            rl.removeView(tv);
+                        }
                     }
 
                     break;

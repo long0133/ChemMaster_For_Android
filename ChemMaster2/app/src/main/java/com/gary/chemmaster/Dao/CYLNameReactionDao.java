@@ -57,6 +57,8 @@ public class CYLNameReactionDao {
 
         cursor.close();
 
+        db.close();
+
         return list;
     }
 
@@ -85,6 +87,8 @@ public class CYLNameReactionDao {
 
         cursor.close();
 
+        db.close();
+
         return reaction;
     }
 
@@ -100,6 +104,8 @@ public class CYLNameReactionDao {
         values.put("urlpath", reaction.getUrlPath());
 //        values.put("bitmap", reaction.getPicture());
 
-        return db.insert(nameReactionTable,null, values);
+        long id = db.insert(nameReactionTable,null, values);
+
+        return id;
     }
 }

@@ -24,6 +24,7 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,11 +59,8 @@ public class CYLMainFragement extends Fragment {
 
     private LinearLayout detailLL;
     private ScrollView detailScrollV;
-    private ImgaeLoader imageLoader;
-
-    private WebView webView;
-
     RadioGroup indicator;
+    private LinearLayout CoverView;
 
     /*******************************最新内容简介的展示VIEWPAGER******************************************/
     List<LinearLayout> relativeLayouts;
@@ -77,7 +75,10 @@ public class CYLMainFragement extends Fragment {
             switch (msg.what)
             {
                 case TIMER_CYCLE_PIC:
-                    pager_editorsuggest.setCurrentItem(((pager_editorsuggest.getCurrentItem()+1)%relativeLayouts.size()),true);
+                    if (relativeLayouts != null && relativeLayouts.size() != 0)
+                    {
+                        pager_editorsuggest.setCurrentItem(((pager_editorsuggest.getCurrentItem()+1)%relativeLayouts.size()),true);
+                    }
                     break;
             }
         }
@@ -95,11 +96,12 @@ public class CYLMainFragement extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, null);
         imgaeLoader = new ImgaeLoader(getContext());
 
-       initView(view);
+        Toast.makeText(getContext(),"正在加载数据，请稍后...", Toast.LENGTH_LONG).show();
+
+        initView(view);
         initBrifView(view);
 
         getInfoToShow();
-
 
         return view;
     }
@@ -111,9 +113,14 @@ public class CYLMainFragement extends Fragment {
         pager_editorsuggest = (CYLViewPager) view.findViewById(R.id.Viewpager_main_editorsuggest);
         detailLL = (LinearLayout) view.findViewById(R.id.detailContentLLForMain);
         detailScrollV = (ScrollView) view.findViewById(R.id.detailScrollVForMain);
+        CoverView = (LinearLayout) view.findViewById(R.id.coverView);
 
-        imageLoader = new ImgaeLoader(getContext());
-        webView = new WebView(getContext());
+        CoverView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         detailScrollV.setVisibility(View.INVISIBLE);
 
@@ -324,6 +331,25 @@ public class CYLMainFragement extends Fragment {
     /*******************************最新内容简介的展示VIEWPAGER******************************************/
     private CYLViewPager Brif_ViewPager;
     private  RadioGroup Brif_RadioGroup;
+    private Brif_HighLightFragment BFFragment;
+    private Brif_NameReacFragment BNRFragment;
+    private Brif_TotalSynFrangment BTSFragment;
+    private static final int MESSAGE_DONE_LOADING = 3;
+    private Handler brif_handler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+
+            switch (msg.what)
+            {
+                case MESSAGE_DONE_LOADING:
+                    CoverView.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getContext(),"首页内容加载完毕",Toast.LENGTH_LONG).show();
+                    break;
+            }
+
+        }
+    };
 
     private void initBrifView(View view)
     {
@@ -341,9 +367,33 @@ public class CYLMainFragement extends Fragment {
     {
         List<Fragment> fragments = new ArrayList<>();
 
-        fragments.add(new Brif_HighLightFragment());
-        fragments.add(new Brif_TotalSynFrangment());
-        fragments.add(new Brif_NameReacFragment());
+        BFFragment = new Brif_HighLightFragment();
+        BNRFragment = new Brif_NameReacFragment();
+        BTSFragment = new Brif_TotalSynFrangment();
+
+        new Thread(){
+
+            @Override
+            public void run() {
+
+                while (BFFragment.isLoading || BNRFragment.isLoading || BTSFragment.isLoading)
+                {
+                    try {
+                        Thread.sleep(2000);
+                    }
+                    catch (InterruptedException e)
+                    {
+
+                    }
+                }
+
+                Message.obtain(brif_handler,MESSAGE_DONE_LOADING).sendToTarget();
+            }
+        }.start();
+
+        fragments.add(BFFragment);
+        fragments.add(BTSFragment);
+        fragments.add(BNRFragment);
 
         Brif_ViewPager.setAdapter(new CYLBrifViewPagerAdapter(getFragmentManager(),fragments));
     }

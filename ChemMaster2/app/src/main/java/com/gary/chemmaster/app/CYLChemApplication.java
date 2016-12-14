@@ -1,12 +1,6 @@
 package com.gary.chemmaster.app;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.ParcelUuid;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.gary.chemmaster.Dao.CYLEditorChoiceDao;
 import com.gary.chemmaster.Dao.CYLNameReactionDao;
@@ -40,6 +34,7 @@ public class CYLChemApplication extends Application {
     public static String ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT= "ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT";
     /*设置显示化学常用网址*/
     public static String ACTION_PREPARE_TO_SHOW_CHEMTOOL= "ACTION_PREPARE_TO_SHOW_CHEMTOOL";
+    public static String ACTION_NAME= "ACTION_NAME";
 
     public static CYLPreference preference;
 
@@ -53,6 +48,7 @@ public class CYLChemApplication extends Application {
 
         CYLPreference.init(getApplicationContext());
         preference = CYLPreference.getInstance();
+
     }
 
 

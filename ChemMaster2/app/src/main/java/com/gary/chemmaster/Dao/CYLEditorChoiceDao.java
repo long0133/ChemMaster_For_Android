@@ -73,6 +73,8 @@ public class CYLEditorChoiceDao {
             }
         }
 
+        cursor.close();
+
         db.close();
         return pubs;
     }
@@ -83,14 +85,20 @@ public class CYLEditorChoiceDao {
         CYLDBOpenHelper helper = new CYLDBOpenHelper(context, CYLChemApplication.SQlite_DataBase_EditorChoice_History,
                                                                 historyTable);
 
-        SQLiteDatabase db = helper.getReadableDatabase();
+        SQLiteDatabase db = helper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put("id",pub.getId());
         values.put("pubDate", pub.getPubDate());
         values.put("doi", pub.getDoi());
 
-        return db.insert(CYLDBOpenHelper.EDITOR_CHOICE_HISTORY_TABLE, null,values);
+        long id = db.insert(CYLDBOpenHelper.EDITOR_CHOICE_HISTORY_TABLE, null, values);
+
+        db.close();
+
+        return id;
+
+
     }
 
 
@@ -125,6 +133,8 @@ public class CYLEditorChoiceDao {
 
         if (c != null) c.close();
 
+        db.close();
+
         return datas;
     }
 
@@ -142,6 +152,11 @@ public class CYLEditorChoiceDao {
         values.put("doi", editor.getDoi());
         values.put("picpath", editor.getPicPath());
 
-        return db.insert(CYLDBOpenHelper.EDITOR_CHOICE_TABLE,null,values);
+
+        long id = db.insert(CYLDBOpenHelper.EDITOR_CHOICE_TABLE,null,values);
+
+        db.close();
+
+        return id;
     }
 }

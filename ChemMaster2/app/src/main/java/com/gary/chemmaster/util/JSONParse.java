@@ -111,7 +111,6 @@ public class JSONParse {
         /*就在数据库中直接取*/
             list = choiceDao.getHistoryFromPrivider(null,null);
             Log.i("cyl","从数据库中存取出：" + list.size());
-            CYLChemApplication.preference.saveData(HISTORY_UPDATE_PREFERENCES, System.currentTimeMillis());
             CYLChemApplication.preference.saveData(IS_HISTORY_UPDATE_PREFERENCES, false);
         }
 

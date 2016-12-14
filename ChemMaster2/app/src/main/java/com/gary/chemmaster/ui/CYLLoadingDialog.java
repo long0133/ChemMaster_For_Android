@@ -56,13 +56,13 @@ public class CYLLoadingDialog extends Dialog {
         setContentView(loadingDialog);
 
         /*设置加载框的大小*/
-        Window dialogW = getWindow();
-        WindowManager.LayoutParams lp = dialogW.getAttributes();
-        DisplayMetrics d = getContext().getResources().getDisplayMetrics();
-        lp.height = (int)(d.heightPixels*0.2);
-        lp.width = (int)(d.widthPixels*0.8);
-        lp.gravity = Gravity.CENTER;
-        dialogW.setAttributes(lp);
+//        Window dialogW = getWindow();
+//        WindowManager.LayoutParams lp = dialogW.getAttributes();
+//        DisplayMetrics d = getContext().getResources().getDisplayMetrics();
+//        lp.height = (int)(d.heightPixels*0.2);
+//        lp.width = (int)(d.widthPixels*0.8);
+//        lp.gravity = Gravity.CENTER;
+//        dialogW.setAttributes(lp);
 
         setCanceledOnTouchOutside(false);
     }

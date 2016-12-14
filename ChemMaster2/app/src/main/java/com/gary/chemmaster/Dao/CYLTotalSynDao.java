@@ -64,6 +64,8 @@ public class CYLTotalSynDao {
 
         cursor.close();
 
+        db.close();
+
         return list;
     }
 
@@ -98,6 +100,8 @@ public class CYLTotalSynDao {
 
         cursor.close();
 
+        db.close();
+
         return reaction;
     }
 
@@ -116,7 +120,11 @@ public class CYLTotalSynDao {
         values.put("bitmap", reaction.getPicture());
         values.put("typenum",reaction.getTypeNum());
 
-        return db.insert(totalSynthesisListTable,null, values);
+        long id = db.insert(totalSynthesisListTable,null, values);
+
+        db.close();
+
+        return id;
     }
 
 }

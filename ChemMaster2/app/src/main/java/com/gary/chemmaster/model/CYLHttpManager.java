@@ -201,7 +201,7 @@ public class CYLHttpManager {
             @Override
             protected void onPostExecute(List<String> list) {
 
-                callBack.showDetailContent(list);
+                callBack.showDetailContent(list,flag);
 
             }
         };

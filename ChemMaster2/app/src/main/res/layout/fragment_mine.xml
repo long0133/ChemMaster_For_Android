@@ -1,15 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="196dp" />
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@mipmap/logo"
+        android:scaleType="center"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:id="@+id/myReactionBtn"
+        android:drawableLeft="@mipmap/chem64"
+        android:text="我的人名反应"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/logo"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/select_backgroud"
+        android:layout_marginLeft="10dp"
+        />
+
+    <Button
+        android:id="@+id/myTotalBtn"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:drawableLeft="@mipmap/molecule64"
+        android:text="我的全合成"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/select_backgroud"
+        android:layout_below="@+id/myReactionBtn"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <Button
+        android:id="@+id/myHighLight"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:drawableLeft="@mipmap/folder64"
+        android:text="我的收藏"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/myTotalBtn"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/select_backgroud"
+        />
+
+
 </RelativeLayout>

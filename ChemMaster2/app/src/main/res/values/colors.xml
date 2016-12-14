@@ -6,5 +6,6 @@
     <color name="colorGray">#d7dee4</color>
     <color name="colorSub">#7c858d</color>
     <color name="colorTitle">#cc00BFFF</color>
+    <color name="colorWhite">#fafafa</color>
     <color name="colorHoneyDew">#87CEFA</color>
 </resources>

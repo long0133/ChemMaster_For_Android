@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.gary.chemmaster.R;
 import com.gary.chemmaster.adapter.CYLPagerAdapter;
@@ -158,4 +159,5 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         }
 
     }
+
 }

@@ -35,6 +35,7 @@ import java.util.Random;
 public class Brif_TotalSynFrangment extends Fragment{
 
     private CYLListView TotalListV;
+    public boolean isLoading = true;
 
     @Nullable
     @Override
@@ -44,7 +45,7 @@ public class Brif_TotalSynFrangment extends Fragment{
 
         initView(view);
 
-        setListViewContent();
+        setListViewContent(getContext());
 
         return view;
 
@@ -55,7 +56,7 @@ public class Brif_TotalSynFrangment extends Fragment{
         TotalListV = (CYLListView) view.findViewById(R.id.brif_totalSynthesis_listV);
     }
 
-    private void setListViewContent()
+    private void setListViewContent(final Context context)
     {
         AsyncTask<String,String,List<CYLReactionDetail>> task = new AsyncTask<String, String, List<CYLReactionDetail>>() {
             @Override
@@ -70,7 +71,7 @@ public class Brif_TotalSynFrangment extends Fragment{
                 try
                 {
                     CYLHtmlParse parse = new CYLHtmlParse();
-                    datas = parse.getRandomTotalSynthesisListOfAlphaBet(datas,alphaBet);
+                    datas = parse.getRandomTotalSynthesisListOfAlphaBet(context,datas,alphaBet);
 
                 }catch (IOException e)
                 {
@@ -85,6 +86,8 @@ public class Brif_TotalSynFrangment extends Fragment{
 
                 TotalListV.setAdapter(new InnerTotalSynListAdapter(list));
                 TotalListV.setOnItemClickListener(new InnerTotalSynOnItemClickListener(list));
+
+                isLoading = false;
 
             }
         };
@@ -103,7 +106,7 @@ public class Brif_TotalSynFrangment extends Fragment{
         }
 
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
             Intent intent = new Intent(getContext(), ShowPicListActivity.class);
             startActivity(intent);
@@ -117,7 +120,11 @@ public class Brif_TotalSynFrangment extends Fragment{
                 }
 
                 @Override
-                public void showDetailContent(List<String> content) {
+                public void showDetailContent(List<String> content,MouleFlag flag) {
+
+                    Intent nameCast = new Intent(CYLChemApplication.ACTION_NAME);
+                    nameCast.putExtra("name",datas.get(position).getName());
+                    getContext().sendBroadcast(nameCast);
 
                     Intent BroadCast = new Intent(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_TOTAL_SYNTHESIS_WITH_CONTENT);
                     BroadCast.putStringArrayListExtra("content",new ArrayList<String>(content));

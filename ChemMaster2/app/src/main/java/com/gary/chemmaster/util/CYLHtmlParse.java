@@ -4,10 +4,12 @@ import android.content.Context;
 import android.text.Html;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.gary.chemmaster.CYLEnum.MouleFlag;
 import com.gary.chemmaster.Dao.CYLNameReactionDao;
 import com.gary.chemmaster.Dao.CYLTotalSynDao;
+import com.gary.chemmaster.activity.MainActivity;
 import com.gary.chemmaster.activity.ShowPicListActivity;
 import com.gary.chemmaster.app.CYLChemApplication;
 import com.gary.chemmaster.entity.CYLChemTool;
@@ -18,6 +20,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,7 @@ public class CYLHtmlParse {
 
 
     CYLChemApplication application;
+    private Context context;
     private CYLNameReactionDao nameReactionDao = CYLChemApplication.nameReactionDao;
 
     public CYLHtmlParse() {
@@ -39,6 +44,8 @@ public class CYLHtmlParse {
 
     public List<CYLReactionDetail> getReactionList(Context context, MouleFlag flag) throws IOException
     {
+
+        this.context = context;
 
         List<CYLReactionDetail> list = new ArrayList<>();
 
@@ -87,6 +94,7 @@ public class CYLHtmlParse {
         for (char alphaB = 'a'; alphaB <= 'z'; alphaB++)
         {
             Log.d("cyl","加载"+alphaB);
+
             String path = "http://www.organic-chemistry.org/totalsynthesis/navi/"+alphaB+".shtm";
             String htmlStr = CYLHttpUtils.getString(CYLHttpUtils.get(path));
 
@@ -139,9 +147,10 @@ public class CYLHtmlParse {
     }
 
     /*获取带某个字母的10个全合成list*/
-    public List<CYLReactionDetail> getRandomTotalSynthesisListOfAlphaBet(List<CYLReactionDetail> list,char alphaB) throws IOException
+    public List<CYLReactionDetail> getRandomTotalSynthesisListOfAlphaBet(Context context,List<CYLReactionDetail> list,char alphaB) throws IOException
     {
 
+        this.context = context;
         list = CYLChemApplication.totalSynDao.getAllTotalSynReaction();
 
         if (list.isEmpty())

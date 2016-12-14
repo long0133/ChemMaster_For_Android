@@ -3,12 +3,14 @@ package com.gary.chemmaster.ui;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -672,5 +674,16 @@ public class CYLDrawView extends View {
         {
             this.points = points;
         }
+    }
+
+    private float getAproprateBondLength()
+    {
+        DisplayMetrics matrix = new DisplayMetrics();
+        getDisplay().getMetrics(matrix);
+
+        int scale = 200 / 2440;
+
+        return matrix.heightPixels * scale;
+
     }
 }

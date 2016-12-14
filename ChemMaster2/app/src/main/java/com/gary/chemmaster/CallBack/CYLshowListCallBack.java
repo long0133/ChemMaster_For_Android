@@ -1,5 +1,7 @@
 package com.gary.chemmaster.CallBack;
 
+import com.gary.chemmaster.CYLEnum.MouleFlag;
+
 import java.util.List;
 
 /**
@@ -9,5 +11,5 @@ public interface CYLshowListCallBack<T> {
 
      void goToShowList(List<T> list);
 
-     void showDetailContent(List<String> content);
+     void showDetailContent(List<String> content, MouleFlag flag);
 }

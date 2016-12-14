@@ -29,6 +29,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Gallery;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -47,9 +48,11 @@ import com.gary.chemmaster.adapter.CYLTotalSynAdapter;
 import com.gary.chemmaster.adapter.CYLTotalSynAlertAdapter;
 import com.gary.chemmaster.app.CYLChemApplication;
 import com.gary.chemmaster.entity.CYLChemTool;
+import com.gary.chemmaster.entity.CYLContent;
 import com.gary.chemmaster.entity.CYLPicEntity;
 import com.gary.chemmaster.entity.CYLReactionDetail;
 import com.gary.chemmaster.model.CYLHttpManager;
+import com.gary.chemmaster.ui.CYLEditDialog;
 import com.gary.chemmaster.ui.CYLLoadingDialog;
 import com.gary.chemmaster.ui.CYLShowDetailDialog;
 import com.gary.chemmaster.util.CYLHttpUtils;
@@ -72,6 +75,7 @@ public class ShowPicListActivity extends AppCompatActivity{
     private ImgaeLoader imageLoader;
     private LinearLayout searchLL;
     private TextView searchTitle;
+    private ImageButton saveContentBtn;
 
     private Button searchByAlphaB;
     private EditText searchET;
@@ -97,6 +101,9 @@ public class ShowPicListActivity extends AppCompatActivity{
          searchLL = (LinearLayout) findViewById(R.id.searchLL);
          searchTitle = (TextView) findViewById(R.id.searchTitle);
          searchET = (EditText) findViewById(R.id.nameListSearcEt);
+         saveContentBtn = (ImageButton) findViewById(R.id.saveContent);
+
+         saveContentBtn.setOnClickListener(new InnerSaveContentListener());
 
          searchET.addTextChangedListener(new TextWatcher() {
              @Override
@@ -123,15 +130,6 @@ public class ShowPicListActivity extends AppCompatActivity{
          imageLoader = new ImgaeLoader(this);
      }
 
-//    @Override
-//    public void onClick(View v) {
-//        switch (v.getId()){
-//            case R.id.searchByAlphaB:
-//
-//                break;
-//        }
-//    }
-
     /*人名反应点击监听器*/
     private class InnerReactiongListOnItemClickListener implements AdapterView.OnItemClickListener
     {
@@ -141,6 +139,7 @@ public class ShowPicListActivity extends AppCompatActivity{
             /*显示加载动画*/
             CYLLoadingDialog.showLoading(ShowPicListActivity.this);
 
+            currentDataName = data.get(position).getName();
             CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(),MouleFlag.moduleNameReaction, new CYLshowListCallBack<String>() {
 
                 /*ignore*/
@@ -150,9 +149,9 @@ public class ShowPicListActivity extends AppCompatActivity{
                 }
 
                 @Override
-                public void showDetailContent(List<String> content) {
+                public void showDetailContent(List<String> content, MouleFlag flag) {
 
-                    showViewOfContent(content);
+                    showViewOfContent(content,flag);
 
                 }
             });
@@ -179,9 +178,12 @@ public class ShowPicListActivity extends AppCompatActivity{
             {
                 CYLReactionDetail detail = iterator.next();
                 detail.setTypeNum(CYLReactionDetail.IS_FOR_TOTAL_SYN);
-                if (detail.getName().substring(0,1).contains(title.getText().toString()))
+                if (detail.getName().length() > 0)
                 {
-                    subData.add(detail);
+                    if (detail.getName().substring(0,1).contains(title.getText().toString()))
+                    {
+                        subData.add(detail);
+                    }
                 }
             }
 
@@ -199,7 +201,7 @@ public class ShowPicListActivity extends AppCompatActivity{
                     //隐藏dialog 显示loading动画
                     detailDialog.dismiss();
                     CYLLoadingDialog.showLoading(ShowPicListActivity.this);
-
+                    currentDataName = data.get(position).getName();
                     CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(), MouleFlag.moduleTotalSynthesis, new CYLshowListCallBack<String>() {
 
                         /*ignore*/
@@ -209,9 +211,9 @@ public class ShowPicListActivity extends AppCompatActivity{
                         }
 
                         @Override
-                        public void showDetailContent(List<String> content) {
+                        public void showDetailContent(List<String> content, MouleFlag flag) {
 
-                            showViewOfContent(content);
+                            showViewOfContent(content,flag);
 
                         }
                     });
@@ -253,6 +255,7 @@ public class ShowPicListActivity extends AppCompatActivity{
                             CYLLoadingDialog.showLoading(ShowPicListActivity.this);
 
                             List<CYLReactionDetail> data = dialog.getData();
+                            currentDataName = data.get(position).getName();
                             CYLHttpManager.setDtailContent(ShowPicListActivity.this, data.get(position).getUrlPath(), MouleFlag.moduleHighLightOfYear, new CYLshowListCallBack<String>() {
                                 @Override
                                 public void goToShowList(List<String> list) {
@@ -260,10 +263,10 @@ public class ShowPicListActivity extends AppCompatActivity{
                                 }
 
                                 @Override
-                                public void showDetailContent(List<String> content) {
+                                public void showDetailContent(List<String> content,MouleFlag flag) {
 
 
-                                    showViewOfContent(content);
+                                    showViewOfContent(content,flag);
                                 }
                             });
                         }
@@ -271,7 +274,7 @@ public class ShowPicListActivity extends AppCompatActivity{
                 }
 
                 @Override
-                public void showDetailContent(List<String> content) {
+                public void showDetailContent(List<String> content,MouleFlag flag) {
 
 
                 }
@@ -324,7 +327,7 @@ public class ShowPicListActivity extends AppCompatActivity{
 
                         /*ignore*/
                         @Override
-                        public void showDetailContent(List<String> content) {
+                        public void showDetailContent(List<String> content, MouleFlag flag) {
 
                         }
                     });
@@ -333,15 +336,30 @@ public class ShowPicListActivity extends AppCompatActivity{
         }
     }
 
+    /*saveContent监听器*/
+    private class InnerSaveContentListener implements View.OnClickListener
+    {
+        @Override
+        public void onClick(View v) {
+
+            CYLEditDialog dialog = new CYLEditDialog(ShowPicListActivity.this,currentContent,currentDataName);
+            dialog.show();
+        }
+    }
 
     /*根据传入的字符串内容显示界面*/
-    private void showViewOfContent(List<String> content)
+    private CYLContent currentContent;
+    private String currentDataName;
+    private void showViewOfContent(List<String> content,MouleFlag flag)
     {
 
         CYLLoadingDialog.loadingDismiss();
            /*显示详情页面*/
         detailScroll.setVisibility(View.VISIBLE);
+        saveContentBtn.setVisibility(View.VISIBLE);
         detailLL.removeAllViews();
+
+        currentContent = new CYLContent(content,flag);
 
         Toast.makeText(this,"正在加载图片",Toast.LENGTH_SHORT).show();
 
@@ -431,6 +449,7 @@ public class ShowPicListActivity extends AppCompatActivity{
         filter.addAction(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT);
         filter.addAction(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_TOTAL_SYNTHESIS_WITH_CONTENT);
         filter.addAction(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_NAME_REACTIONLIST_WITH_CONTENT);
+        filter.addAction(CYLChemApplication.ACTION_NAME);
         registerReceiver(receiver,filter);
     }
 
@@ -465,10 +484,15 @@ private String newestAction;
                 /*获得全合成list标题*/
                 for (int i = 0; i < data.size(); i++)
                 {
-                    String T = data.get(i).getName().substring(0,1).toUpperCase();
-                    if (!alphabs.contains(T) && T.matches("[A-Z]"))
+
+                    CYLReactionDetail detail = data.get(i);
+                    if (detail.getName() != null && detail.getName().length() > 0)
                     {
-                        alphabs.add(T);
+                        String T = data.get(i).getName().substring(0,1).toUpperCase();
+                        if (!alphabs.contains(T) && T.matches("[A-Z]"))
+                        {
+                            alphabs.add(T);
+                        }
                     }
                 }
 
@@ -506,17 +530,23 @@ private String newestAction;
             else if(intent.getAction().equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT))
             {
                 ArrayList<String> content = intent.getStringArrayListExtra("content");
-                showViewOfContent(content);
+                Log.d("cyl",content.toString());
+                showViewOfContent(content,MouleFlag.moduleHightLight);
             }
             else if(intent.getAction().equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_TOTAL_SYNTHESIS_WITH_CONTENT))
             {
                 ArrayList<String> content = intent.getStringArrayListExtra("content");
-                showViewOfContent(content);
+                showViewOfContent(content,MouleFlag.moduleTotalSynthesis);
             }
             else if(intent.getAction().equals(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_NAME_REACTIONLIST_WITH_CONTENT))
             {
                 ArrayList<String> content = intent.getStringArrayListExtra("content");
-                showViewOfContent(content);
+                showViewOfContent(content, MouleFlag.moduleNameReaction);
+            }
+            else if (intent.getAction().equals(CYLChemApplication.ACTION_NAME))
+            {
+                String name = intent.getStringExtra("name");
+                currentDataName = name;
             }
 
         }
@@ -524,6 +554,12 @@ private String newestAction;
 
     @Override
     public void onBackPressed() {
+
+
+        if (detailScroll.getVisibility() == View.INVISIBLE)
+        {
+            super.onBackPressed();
+        }
 
         if (detailScroll.getVisibility() == View.VISIBLE)
         {
@@ -533,14 +569,10 @@ private String newestAction;
             {
                 finish();
             }
+
             detailScroll.setVisibility(View.INVISIBLE);
+            saveContentBtn.setVisibility(View.INVISIBLE);
         }
-        else
-        {
-
-        }
-
-        super.onBackPressed();
     }
 
     @Override

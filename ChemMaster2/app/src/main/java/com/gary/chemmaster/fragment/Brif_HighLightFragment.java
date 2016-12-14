@@ -42,6 +42,7 @@ public class Brif_HighLightFragment extends Fragment {
     private CYLListView highlight_lv;
     private List<CYLReactionDetail> datas;
     private InnerBrifHighLightAdapter adapter;
+    public boolean isLoading = true;
 
     @Nullable
     @Override
@@ -97,12 +98,14 @@ public class Brif_HighLightFragment extends Fragment {
                     Toast.makeText(getContext(),"没有网络连接", Toast.LENGTH_LONG).show();
                 }
 
-                if (datas.size() != 0)
+                if (datas != null && datas.size() != 0)
                 {
                     adapter = new InnerBrifHighLightAdapter();
                     highlight_lv.setAdapter(adapter);
                     highlight_lv.setOnItemClickListener(new InnerBrifHighLightOnItemClickListener());
                 }
+
+                isLoading = false;
             }
         };
 
@@ -155,9 +158,9 @@ public class Brif_HighLightFragment extends Fragment {
     class InnerBrifHighLightOnItemClickListener implements AdapterView.OnItemClickListener
     {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-            Intent intent = new Intent(getContext(), ShowPicListActivity.class);
+            final Intent intent = new Intent(getContext(), ShowPicListActivity.class);
             startActivity(intent);
 
             String urlPath = datas.get(position).getUrlPath();
@@ -170,7 +173,11 @@ public class Brif_HighLightFragment extends Fragment {
                 }
 
                 @Override
-                public void showDetailContent(List<String> content) {
+                public void showDetailContent(List<String> content, MouleFlag flag) {
+
+                    Intent nameCast = new Intent(CYLChemApplication.ACTION_NAME);
+                    nameCast.putExtra("name",datas.get(position).getName());
+                    getContext().sendBroadcast(nameCast);
 
                     Intent broadcast = new Intent(CYLChemApplication.ACTION_DIRECTLY_TO_SHOW_HIGHLIGHT_WITH_CONTENT);
                     broadcast.putStringArrayListExtra("content",new ArrayList<String>(content));

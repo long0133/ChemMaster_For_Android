@@ -102,7 +102,7 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
 
                     /*ignore*/
                     @Override
-                    public void showDetailContent(List<String> content) {
+                    public void showDetailContent(List<String> content,MouleFlag flag) {
 
                     }
 
@@ -132,7 +132,7 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
 
                     /*ignore*/
                     @Override
-                    public void showDetailContent(List<String> content) {
+                    public void showDetailContent(List<String> content, MouleFlag flag) {
 
                     }
                 });
@@ -157,7 +157,7 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
 
                     /*ignore*/
                     @Override
-                    public void showDetailContent(List<String> content) {
+                    public void showDetailContent(List<String> content, MouleFlag flag) {
 
                     }
                 });
@@ -180,7 +180,7 @@ public class CYLSearchFragement extends Fragment implements View.OnClickListener
 
                     /*ignore*/
                     @Override
-                    public void showDetailContent(List<String> content) {
+                    public void showDetailContent(List<String> content, MouleFlag flag) {
 
                     }
                 });
